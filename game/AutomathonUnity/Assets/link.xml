@@ -1,0 +1,12 @@
+<!--
+  Types read and written by reflection (Newtonsoft.Json): the GameState sent to the agents, their AIMessage, the
+  replays (MatchReplay). The browser build (IL2CPP) strips the code it sees no call to: keep them whole.
+-->
+<linker>
+  <assembly fullname="Newtonsoft.Json" preserve="all" />
+  <assembly fullname="Assembly-CSharp">
+    <namespace fullname="Automathon" preserve="all" />
+    <namespace fullname="Automathon.AI" preserve="all" />
+    <namespace fullname="Automathon.Game" preserve="all" />
+  </assembly>
+</linker>

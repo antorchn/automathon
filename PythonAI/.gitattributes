@@ -1,0 +1,8 @@
+# Fins de ligne : un script shell en CRLF plante sous Linux/macOS ($'\r': command not found),
+# meme s'il a ete extrait depuis un clone Windows (core.autocrlf=true).
+* text=auto
+*.sh text eol=lf
+*.ps1 text eol=crlf
+
+*.zip binary
+*.npz binary

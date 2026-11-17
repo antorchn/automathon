@@ -1,0 +1,106 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: LightExplosion
+  m_Shader: {fileID: 4800000, guid: 6634423b27ec590469d68def769e1ab0, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _AlphaTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BlastInverseCurve:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BlastShape:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MaskTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _ActivateBlast: 0
+    - _ActivateFlash: 0
+    - _ActivateLargeRays: 0
+    - _ActivateRays: 0
+    - _AdvancementForFullScreen: 0.6
+    - _BlastAdvancement: 0
+    - _BlastDistortionChromatic: 0.4
+    - _BlastDistortionStrength: 0.03
+    - _BlastDistortionWidth: 0.1
+    - _BlastIntensity: 0.00045484304
+    - _BlastProgress: 0.99629045
+    - _BlastRangeRelativeToCorner: 1
+    - _BrigthnessIncreaseSpeed: 3
+    - _EnableExternalAlpha: 0
+    - _ExplosionEpicenterX: 0
+    - _ExplosionEpicenterY: 0
+    - _ExplosionGlobalAdvancement: 0
+    - _ExplosionRange: 1.3
+    - _FadingSpeed: 12
+    - _FlashAdvancement: 0
+    - _GlobalLuminosityDecrease: 1
+    - _IntensityBorderRing: 0.9
+    - _IntensityCenterRing: 3.5
+    - _IntensityMaxVariationThroughTime: 0.1
+    - _IntensityVariationSpeedFactor: 2
+    - _LargeRaysAdvancement: 0
+    - _LargeRaysCount: 12
+    - _LargeRaysSeed: 5203.8784
+    - _LengthOverWidthIntensityWeight: 0.8
+    - _LengthOverWidthRatio: 20
+    - _MaxAngleDeviation: 1
+    - _MaxIntensity: 0.7
+    - _MaxLength: 0.8
+    - _MaxStartingAdvancementDelay: 0.2
+    - _MaxWidth: 0.01
+    - _MinIntensity: 0.1
+    - _MinLength: 0.05
+    - _MinWidth: 0.0001
+    - _RaysAdvancement: 0
+    - _RaysAdvancementDuration: 0.5
+    - _RaysCount: 12
+    - _RaysEndingAdvancement: 1
+    - _RaysSeed: 22.270027
+    - _RaysStartingAdvancement: 0
+    - _RingWidth: 0.08
+    - _WidthDeviationMaxPercentage: 0.2
+    - _ZWrite: 0
+    m_Colors:
+    - _BlastCoolColor: {r: 0.3, g: 0.35, b: 1, a: 1}
+    - _BlastHotColor: {r: 0.5, g: 0.92, b: 1, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _FlashColor: {r: 0.6, g: 0.92, b: 1, a: 1}
+    - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1

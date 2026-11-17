@@ -1,0 +1,13 @@
+# Pour pip / Databricks (%pip install -r requirements_participant.txt).
+# La reference des versions est pyproject.toml + uv.lock (voir README) : garder ce fichier synchronise.
+pydantic
+pyzmq
+gymnasium>=0.29.0
+numpy
+numba>=0.60
+tqdm
+hydra-core>=1.3.2
+tensorboard
+# torch n'est plus publie pour les Mac Intel : sur ces machines, pas d'entrainement ni de my_rl_agent.
+stable-baselines3>=2.2.0; sys_platform != "darwin" or platform_machine != "x86_64"
+torch; sys_platform != "darwin" or platform_machine != "x86_64"

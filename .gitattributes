@@ -1,0 +1,20 @@
+# Fins de ligne normalisees (LF dans le depot)
+* text=auto
+
+# Scripts shell : LF obligatoire, meme extraits depuis un clone Windows
+*.sh text eol=lf
+*.ps1 text eol=crlf
+
+# Fichiers binaires (jamais de conversion de fins de ligne ni de diff texte)
+*.png binary
+*.jpg binary
+*.psd binary
+*.wav binary
+*.mp3 binary
+*.ogg binary
+*.ttf binary
+*.otf binary
+*.zip binary
+*.npz binary
+*.dll binary
+*.nupkg binary

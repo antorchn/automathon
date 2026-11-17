@@ -1,0 +1,42 @@
+# Sorties de tools/build.py (Headless, jeu Unity, zips ToutEnUn, logs)
+/build/
+
+# Archives deposees a la racine (ex : telechargement du code source)
+/*.zip
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+
+# Sorties d'entrainement et d'evaluation du kit
+PythonAI/training/outputs/
+PythonAI/training/checkpoints/
+PythonAI/training/tensorboard/
+PythonAI/training/rl_model*.zip
+PythonAI/training/bench_model.zip
+PythonAI/**/mon_agent_*.zip
+PythonAI/benchmark/
+PythonAI/evaluation/tournament_results.json
+PythonAI/evaluation/*_results.json
+
+# Unity (complete game/AutomathonUnity/.gitignore)
+game/AutomathonUnity/[Ll]ibrary/
+game/AutomathonUnity/[Tt]emp/
+game/AutomathonUnity/[Ll]ogs/
+game/AutomathonUnity/[Uu]ser[Ss]ettings/
+game/AutomathonUnity/[Oo]bj/
+
+# .NET (complete game/Headless/.gitignore)
+game/Headless/bin/
+game/Headless/obj/
+game/AutomathonUnity/Assets/Core/bin/
+game/AutomathonUnity/Assets/Core/obj/
+
+# Systeme et editeurs
+.DS_Store
+Thumbs.db
+.idea/
+.vs/
+.vscode/

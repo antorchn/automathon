@@ -1,0 +1,56 @@
+# =============================================================================
+# Dependances du SDK Python Automathon, gerees avec uv (https://docs.astral.sh/uv/).
+#
+#   cd PythonAI
+#   uv sync                     # cree .venv/ avec les versions exactes de uv.lock
+#   uv sync --group admin       # + outils admin (OBS, pyautogui)
+#   uv sync --group web         # + serveur local du jeu web (webplay/server.py)
+#   uv run python agents/run_my_agent.py
+#
+# Sans uv : pip install -r requirements_participant.txt (a garder synchronise).
+# =============================================================================
+[project]
+name = "automathon-pythonai"
+version = "1.0.0"
+description = "SDK Python du hackathon Automathon : bridge Unity <-> Python, agents exemples, entrainement RL et evaluation."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pydantic>=2.0",
+    "pyzmq>=25.0",
+    "numpy>=1.24",
+    "gymnasium>=0.29.0",
+    "tqdm",
+    "hydra-core>=1.3.2",
+    "tensorboard",
+    "numba>=0.60",  # extracteur de features compile (agents/my_rl_agent/feature_extractor.py)
+    # torch n'est plus publie pour les Mac Intel (x86_64) depuis la version 2.3.
+    # Sur ces machines, le jeu et les agents heuristiques fonctionnent, mais pas
+    # my_rl_agent ni l'entrainement (a faire sur Databricks).
+    "torch>=2.3; sys_platform != 'darwin' or platform_machine != 'x86_64'",
+    "stable-baselines3>=2.2.0; sys_platform != 'darwin' or platform_machine != 'x86_64'",
+]
+
+[dependency-groups]
+admin = [
+    "obs-websocket-py>=1.0",
+    "pyautogui",
+]
+web = [
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.29",
+]
+
+[tool.uv]
+# PythonAI/ est un dossier de scripts, pas un paquet installable.
+package = false
+
+# Sous Linux, le torch de PyPI embarque CUDA (plusieurs Go). PPO avec un petit MLP
+# tourne aussi vite sur CPU (le goulot est la simulation Unity) : on prend la build CPU.
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu", marker = "sys_platform == 'linux'" }]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true

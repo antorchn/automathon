@@ -1,0 +1,24 @@
+# Reglages partages par les scripts d'entrainement (rl_training.yaml).
+# null = valeur automatique, lue dans la variable d'environnement indiquee.
+unity:
+  num_envs: null       # $AUTOMATHON_NUM_ENVS, sinon min(nb de CPU, 16)
+  port_base: null      # $AUTOMATHON_PORT_BASE, sinon 5600
+  startup_wait: null   # $AUTOMATHON_STARTUP_WAIT, sinon 15 s (attente max du demarrage d'un Headless)
+
+env:
+  backend: vec         # json : protocole JSON, un processus Python par environnement
+                       # binary : protocole binaire, un processus par environnement, memes valeurs, plus rapide
+                       # vec : un seul processus pilote tous les Headless (binaire), memes valeurs, le plus
+                       #   rapide ; adversaires en version Numba (agents/<bot>/fast.py) de preference
+                       # Les trois utilisent l'extracteur de agents/my_rl_agent/feature_extractor.py
+  max_steps: 4200      # troncature d'un episode, en frames (70 s ; avec les regles du jeu, un match finit vers 60 s au plus)
+  frame_skip: 4        # frames jouees par step avec la meme action (agent et adversaire). 4 = conditions d'un
+                       #   match, ou les agents decident une frame sur 4 (15 Hz, bridge.datatypes.DECISION_INTERVAL)
+  map_density: null    # densite de murs : 0 = arene vide, null = densite par defaut du jeu (0.7)
+  random_side: true    # cote de depart de l'agent tire au hasard a chaque episode
+  canonical_side: true # parti a droite, l'agent voit et agit dans le repere tourne de 180 degres
+  rules: {}            # regles du match (vide = regles par defaut), ex. en ligne de commande :
+                       #   +env.rules.MatchDuration=45 +env.rules.MaxActiveShields=1
+                       # noms possibles : voir GameRules dans bridge/datatypes.py
+  tcp_timeout: 500     # ms d'attente d'une reponse du Headless ; au-dela, l'episode est tronque (sans
+                       # recompense de fin) et le reset suivant est retente jusqu'a 3 fois

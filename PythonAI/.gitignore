@@ -1,0 +1,10 @@
+*__pycache__*
+
+# Environnement uv / venv local
+.venv/
+
+# Sorties Hydra (config + logs de chaque run d entrainement)
+training/outputs/
+
+# Replays enregistres par webplay/ (replay.py, server.py)
+webplay/replays/
