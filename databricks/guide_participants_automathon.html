@@ -1,0 +1,598 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RLCS Automathon · Guide participant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: dark poster-style hero, orange diagonal band, cream reading column with a sticky step index.
+   Single deliberate look taken from the RLCS Automathon poster (not theme-switching). */
+:root {
+  --night: #231c18;
+  --night-2: #2f2621;
+  --night-3: #3d322b;
+  --ember: #ff6a1a;
+  --amber: #ffa21c;
+  --gold: #ffc72c;
+  --rust: #c4461a;
+  --cream: #fcf3e4;
+  --paper: #fffaf2;
+  --sand: #f6e4ca;
+  --line: #ecd5b6;
+  --ink: #2b1d14;
+  --ink-soft: #6c5545;
+  --on-night: #f5eadc;
+  --on-night-soft: #c8b5a3;
+
+  --display: "Poppins", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --body: "Poppins", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --step--1: 0.8125rem;
+  --step-0: 1rem;
+  --step-1: 1.1875rem;
+  --step-2: 1.5rem;
+  --step-3: 2rem;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; background: var(--cream); color: var(--ink); font-family: var(--body); font-size: var(--step-0); line-height: 1.65; -webkit-font-smoothing: antialiased; }
+a { color: var(--rust); text-underline-offset: 3px; }
+a:hover { color: var(--ember); }
+:focus-visible { outline: 3px solid var(--ember); outline-offset: 3px; border-radius: 4px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; line-height: 1.15; margin: 0; }
+p { margin: 0; }
+code, kbd, pre { font-variant-ligatures: none; }
+code, kbd { font-family: var(--mono); font-size: 0.88em; }
+:not(pre) > code { background: var(--sand); padding: 0.1em 0.4em; border-radius: 5px; overflow-wrap: anywhere; }
+kbd { background: var(--paper); border: 1px solid var(--line); border-bottom-width: 2px; padding: 0.05em 0.4em; border-radius: 5px; }
+strong { font-weight: 600; }
+
+.wrap { max-width: 1160px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+/* Hero */
+.hero {
+  background:
+    radial-gradient(circle at 88% 8%, rgba(255, 106, 26, 0.55), rgba(255, 106, 26, 0) 38%),
+    radial-gradient(circle at 70% 0%, rgba(255, 162, 28, 0.18), rgba(255, 162, 28, 0) 50%),
+    var(--night);
+  color: var(--on-night); position: relative; overflow: hidden;
+}
+.hero::before, .hero::after { content: ""; position: absolute; height: 10px; border-radius: 10px; background: linear-gradient(90deg, rgba(255, 199, 44, 0), rgba(255, 199, 44, 0.75)); transform: rotate(-14deg); pointer-events: none; }
+.hero::before { width: 340px; top: 70px; left: -60px; }
+.hero::after { width: 220px; top: 150px; left: 12%; opacity: 0.45; height: 6px; }
+.hero .wrap { padding-block: 56px 40px; position: relative; display: grid; gap: 28px; }
+.brand { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px 24px; }
+.brand-mark { font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--amber); font-size: var(--step--1); }
+.brand-school { text-align: right; font-size: var(--step--1); line-height: 1.4; color: var(--on-night-soft); }
+.brand-school strong { display: block; color: var(--gold); font-weight: 500; letter-spacing: 0.18em; }
+.eyebrow { font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--amber); font-size: var(--step--1); }
+.title-block { display: grid; gap: 4px; }
+.title-rlcs { font-weight: 500; font-size: clamp(2.6rem, 9vw, 5.2rem); letter-spacing: 0.08em; color: transparent; -webkit-text-stroke: 2px var(--gold); line-height: 1; }
+.title-main { font-weight: 800; font-size: clamp(2.6rem, 10.5vw, 6.4rem); letter-spacing: -0.01em; line-height: 0.95; background: linear-gradient(90deg, var(--ember), var(--amber) 55%, var(--gold)); -webkit-background-clip: text; background-clip: text; color: transparent; overflow-wrap: anywhere; }
+.hero-lede { max-width: 40rem; font-size: var(--step-1); }
+.hero-lede b { color: var(--gold); font-weight: 600; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.btn { display: inline-flex; align-items: center; gap: 10px; font-family: var(--display); font-weight: 700; font-size: var(--step-0); padding: 14px 24px; border-radius: 999px; text-decoration: none; border: 0; cursor: pointer; }
+.btn-primary { background: linear-gradient(90deg, var(--ember), var(--gold)); color: var(--night); box-shadow: 0 8px 28px rgba(255, 106, 26, 0.35); }
+.btn-primary:hover { color: var(--night); filter: brightness(1.06); }
+.btn-ghost { background: transparent; color: var(--on-night); border: 1.5px solid var(--night-3); }
+.btn-ghost:hover { color: var(--gold); border-color: var(--amber); }
+.btn svg { width: 18px; height: 18px; flex: none; }
+.facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; padding-top: 8px; }
+.fact { display: grid; gap: 6px; min-width: 0; }
+.fact-label { font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; font-size: var(--step--1); color: var(--ember); padding-bottom: 8px; border-bottom: 2px solid var(--night-3); }
+.fact-value { font-weight: 600; font-size: var(--step-1); line-height: 1.3; }
+.fact-sub { color: var(--on-night-soft); font-size: var(--step--1); line-height: 1.5; }
+.band { height: 64px; background: var(--cream); position: relative; margin-top: -1px; }
+.band::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, var(--ember), var(--amber) 60%, var(--gold)); clip-path: polygon(0 0, 100% 0, 100% 18%, 0 78%); }
+.band::after { content: ""; position: absolute; inset: 0; background: var(--night); clip-path: polygon(0 0, 100% 0, 100% 0, 0 38%); }
+
+/* Layout */
+.layout { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 56px; padding-block: 24px 80px; }
+.toc { position: sticky; top: 24px; align-self: start; display: grid; gap: 4px; font-size: var(--step--1); }
+.toc-title { font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--rust); padding-bottom: 8px; margin-bottom: 6px; border-bottom: 2px solid var(--line); }
+.toc a { display: grid; grid-template-columns: 26px 1fr; gap: 6px; padding: 5px 0; color: var(--ink-soft); text-decoration: none; line-height: 1.35; }
+.toc a span:first-child { font-family: var(--mono); color: var(--rust); font-variant-numeric: tabular-nums; }
+.toc a:hover, .toc a.is-active { color: var(--ink); }
+.toc a.is-active { font-weight: 600; }
+main { min-width: 0; display: grid; gap: 72px; }
+section { display: grid; gap: 18px; scroll-margin-top: 24px; min-width: 0; }
+section > p, section > ul, section > ol, .prose { max-width: 44rem; }
+.label { font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--rust); font-size: var(--step--1); padding-bottom: 10px; border-bottom: 2px solid var(--line); max-width: 44rem; }
+.label .where { float: right; letter-spacing: 0.14em; color: var(--ink-soft); font-weight: 600; }
+h2 { font-size: var(--step-3); font-weight: 700; }
+h3 { font-size: var(--step-1); font-weight: 700; }
+ul, ol { margin: 0; padding-left: 1.3em; display: grid; gap: 8px; }
+ul > li, ol > li { min-width: 0; }
+li::marker { color: var(--rust); font-weight: 700; }
+.muted { color: var(--ink-soft); }
+
+/* Overview */
+.trio { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.trio > div { display: grid; gap: 8px; align-content: start; min-width: 0; }
+.trio h3 { padding-bottom: 8px; border-bottom: 2px solid var(--line); }
+.flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: 10px; }
+.node { flex: 1 1 150px; min-width: 0; background: var(--night); color: var(--on-night); border-radius: 14px; padding: 14px 16px; display: grid; gap: 4px; align-content: start; }
+.node .where { font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700; color: var(--amber); }
+.node.pc { background: var(--paper); color: var(--ink); border: 1.5px solid var(--line); }
+.node.pc .where { color: var(--rust); }
+.node b { font-weight: 600; line-height: 1.3; }
+.node small { color: var(--on-night-soft); line-height: 1.45; font-size: var(--step--1); }
+.node.pc small { color: var(--ink-soft); }
+.arrow { align-self: center; color: var(--ember); font-weight: 800; font-size: 1.2rem; flex: none; }
+
+/* Code, notes, tables */
+.code { background: var(--night-2); border-radius: 14px; overflow: hidden; min-width: 0; max-width: 52rem; }
+.code-bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 8px 10px 8px 16px; border-bottom: 1px solid var(--night-3); }
+.code-name { font-family: var(--mono); font-size: 0.75rem; color: var(--on-night-soft); overflow-wrap: anywhere; }
+.copy { font-family: var(--display); font-weight: 600; font-size: 0.75rem; background: transparent; color: var(--gold); border: 1px solid var(--night-3); border-radius: 999px; padding: 4px 12px; cursor: pointer; flex: none; }
+.copy:hover { border-color: var(--amber); }
+pre { margin: 0; padding: 16px; overflow-x: auto; color: var(--on-night); font-family: var(--mono); font-size: 0.84rem; line-height: 1.6; tab-size: 4; }
+pre .c { color: #a8917e; }
+pre .k { color: var(--amber); }
+pre .s { color: #ffd98a; }
+.note { background: var(--sand); border-radius: 14px; padding: 16px 18px; display: grid; gap: 6px; max-width: 44rem; }
+.note-title { font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; font-size: 0.75rem; color: var(--rust); }
+.note.warn { background: var(--night); color: var(--on-night); }
+.note.warn .note-title { color: var(--gold); }
+.note.warn code { background: var(--night-3); color: var(--on-night); }
+.table { overflow-x: auto; max-width: 52rem; }
+table { border-collapse: collapse; width: 100%; font-size: 0.92rem; }
+th, td { text-align: left; padding: 9px 14px 9px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-weight: 700; font-size: var(--step--1); letter-spacing: 0.08em; text-transform: uppercase; color: var(--rust); }
+td:first-child { white-space: nowrap; }
+.clicks { list-style: none; padding: 0; counter-reset: c; display: grid; gap: 10px; max-width: 44rem; }
+.clicks li { counter-increment: c; display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 12px; align-items: start; }
+.clicks li::before { content: counter(c); width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--night); color: var(--gold); font-weight: 700; font-size: 0.85rem; }
+.path { font-weight: 600; }
+.path .sep { color: var(--ember); padding: 0 4px; font-weight: 800; }
+.sheet { background: var(--paper); border: 1.5px solid var(--line); border-radius: 16px; padding: 20px 22px; display: grid; gap: 14px; max-width: 46rem; }
+.sheet dl { margin: 0; display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 10px 20px; }
+.sheet dt { font-weight: 600; }
+.sheet dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 28px; max-width: 52rem; }
+.tabs > div { display: grid; gap: 6px; align-content: start; padding-top: 12px; border-top: 2px solid var(--line); min-width: 0; }
+.tabs h3 { display: flex; align-items: baseline; gap: 10px; }
+.tabs h3 span { font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--rust); font-weight: 700; }
+details { border-bottom: 1px solid var(--line); max-width: 44rem; }
+details:first-of-type { border-top: 1px solid var(--line); }
+summary { cursor: pointer; padding: 14px 0; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+summary::-webkit-details-marker { display: none; }
+summary::after { content: "+"; color: var(--ember); font-weight: 800; font-size: 1.2rem; line-height: 1; }
+details[open] summary::after { content: "–"; }
+details > div { padding: 0 0 16px; display: grid; gap: 10px; min-width: 0; }
+
+footer { background: var(--night); color: var(--on-night-soft); font-size: var(--step--1); }
+footer .wrap { padding-block: 32px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; }
+footer b { color: var(--gold); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; }
+
+@media (max-width: 1000px) { .layout { grid-template-columns: minmax(0, 1fr); gap: 0; } .toc { display: none; } .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 720px) {
+  .facts, .trio, .tabs { grid-template-columns: minmax(0, 1fr); }
+  .brand-school { text-align: left; }
+  .arrow { transform: rotate(90deg); width: 100%; text-align: center; }
+  .node { flex-basis: 100%; }
+  h2 { font-size: var(--step-2); }
+  main { gap: 56px; }
+  .sheet dl { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  .sheet dd { margin-bottom: 8px; }
+  td:first-child { white-space: normal; }
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="brand">
+      <span class="brand-mark">Automatants</span>
+      <span class="brand-school"><strong>CENTRALESUPÉLEC</strong>Association d’Intelligence Artificielle</span>
+    </div>
+    <div class="title-block">
+      <span class="eyebrow">Hackathon · 24 h · Guide participant</span>
+      <span class="title-rlcs" aria-hidden="true">RLCS</span>
+      <h1 class="title-main">AUTOMATHON</h1>
+    </div>
+    <p class="hero-lede">Écrivez un agent qui pilote un vaisseau, entraînez-le par <b>apprentissage par renforcement</b> sur <b>Databricks</b>, puis envoyez-le dans <b>l’Arène</b> pour affronter les autres équipes. Ce guide vous mène de l’installation au tournoi.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" id="dl-notebook" href="data:application/x-ipynb+json;base64,ewogIm5iZm9ybWF0IjogNCwKICJuYmZvcm1hdF9taW5vciI6IDUsCiAiY2VsbHMiOiBbCiAgewogICAiY2VsbF90eXBlIjogIm1hcmtkb3duIiwKICAgImlkIjogImNlbGwtMDAiLAogICAibWV0YWRhdGEiOiB7fSwKICAgInNvdXJjZSI6IFsKICAgICIjIPCfmoAgUkxDUyBBdXRvbWF0aG9uIDogdm90cmUgcHJlbWllciBhZ2VudFxuIiwKICAgICJcbiIsCiAgICAiQ2Ugbm90ZWJvb2sgZW50cmHDrm5lIHVuIGFnZW50IHBhciByZW5mb3JjZW1lbnQgKFBQTyksIGxlIHRlc3RlIGNvbnRyZSBsZXMgYm90cyBmb3VybmlzLCBwdWlzIHByw6lwYXJlIGxlIHppcFxuIiwKICAgICLDoCBlbnZveWVyIGRhbnMgKipsJ0Fyw6huZSoqLCBsJ2FwcGxpY2F0aW9uIGR1IHRvdXJub2kuIENvbXB0ZXogZW52aXJvbiA1IG1pbnV0ZXMgdW5lIGZvaXMgbGUgY2x1c3RlciBkw6ltYXJyw6kuXG4iLAogICAgIlBvdXIgdW4gcHJlbWllciBlc3NhaSwgbmUgbW9kaWZpZXogcmllbi5cbiIsCiAgICAiXG4iLAogICAgIioqQXZhbnQgZGUgY29tbWVuY2VyIDoqKlxuIiwKICAgICItIGNlIG5vdGVib29rIGVzdCBkYW5zIGxlICoqZG9zc2llciBkZSB2b3RyZSDDqXF1aXBlKiogKHBhcyBkYW5zIHZvdHJlIGRvc3NpZXIgcGVyc29ubmVsKSA7XG4iLAogICAgIi0gaWwgZXN0IGF0dGFjaMOpIGF1ICoqY2x1c3RlciBkZSB2b3RyZSDDqXF1aXBlKiogKHPDqWxlY3RldXIgZW4gaGF1dCDDoCBkcm9pdGUpIDtcbiIsCiAgICAiLSBleMOpY3V0ZXogbGVzIGNlbGx1bGVzICoqZGFucyBsJ29yZHJlKiogYXZlYyBgTWFqICsgRW50csOpZWAuIgogICBdCiAgfSwKICB7CiAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAiaWQiOiAiY2VsbC0wMSIsCiAgICJtZXRhZGF0YSI6IHt9LAogICAic291cmNlIjogWwogICAgIiMjIDEuIEluc3RhbGxlciBsZXMgYmlibGlvdGjDqHF1ZXNcbiIsCiAgICAiXG4iLAogICAgIkxlcyBtw6ptZXMgdmVyc2lvbnMgcXVlIGRhbnMgbCdBcsOobmUgOiB1biBtb2TDqGxlIGVudHJhw65uw6kgaWNpIHMneSBjaGFyZ2Ugw6AgbCdpZGVudGlxdWUuIEVudmlyb24gMzAgc2Vjb25kZXMsXG4iLAogICAgIsOgIHJlZmFpcmUgYXByw6hzIGNoYXF1ZSByZWTDqW1hcnJhZ2UgZHUgY2x1c3Rlci4iCiAgIF0KICB9LAogIHsKICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgImlkIjogImNlbGwtMDIiLAogICAibWV0YWRhdGEiOiB7fSwKICAgInNvdXJjZSI6IFsKICAgICIlcGlwIGluc3RhbGwgLXEgLS1leHRyYS1pbmRleC11cmwgaHR0cHM6Ly9kb3dubG9hZC5weXRvcmNoLm9yZy93aGwvY3B1IHRvcmNoPT0yLjE0LjEgc3RhYmxlLWJhc2VsaW5lczM9PTIuOS4yIGd5bW5hc2l1bT09MS40LjAgcHlkYW50aWM9PTIuMTQuMSBweXptcT09MjcuMi4wIG51bXB5PT0yLjQuNiB0cWRtIgogICBdLAogICAiZXhlY3V0aW9uX2NvdW50IjogbnVsbCwKICAgIm91dHB1dHMiOiBbXQogIH0sCiAgewogICAiY2VsbF90eXBlIjogImNvZGUiLAogICAiaWQiOiAiY2VsbC0wMyIsCiAgICJtZXRhZGF0YSI6IHt9LAogICAic291cmNlIjogWwogICAgImRidXRpbHMubGlicmFyeS5yZXN0YXJ0UHl0aG9uKCkiCiAgIF0sCiAgICJleGVjdXRpb25fY291bnQiOiBudWxsLAogICAib3V0cHV0cyI6IFtdCiAgfSwKICB7CiAgICJjZWxsX3R5cGUiOiAibWFya2Rvd24iLAogICAiaWQiOiAiY2VsbC0wNCIsCiAgICJtZXRhZGF0YSI6IHt9LAogICAic291cmNlIjogWwogICAgIiMjIDIuIFBhcmFtw6h0cmVzXG4iLAogICAgIlxuIiwKICAgICJEZXV4IGNoYW1wcyBhcHBhcmFpc3NlbnQgZW4gaGF1dCBkdSBub3RlYm9vayA6XG4iLAogICAgIi0gKirDiXF1aXBlKiogOiBsJ2lkZW50aWZpYW50IGRvbm7DqSBwYXIgbGVzIG9yZ2FuaXNhdGV1cnMgKGV4LiBgZXF1aXBlXzA3YCkgO1xuIiwKICAgICItICoqTWVtYnJlKiogOiB2b3RyZSBudW3DqXJvIGRhbnMgbCfDqXF1aXBlLCBkZSAxIMOgIDQuIExlIGNsdXN0ZXIgZXN0IHBhcnRhZ8OpIDogY2UgbnVtw6lybyB2b3VzIHLDqXNlcnZlIGRlcyBwb3J0cy4iCiAgIF0KICB9LAogIHsKICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgImlkIjogImNlbGwtMDUiLAogICAibWV0YWRhdGEiOiB7fSwKICAgInNvdXJjZSI6IFsKICAgICJkYnV0aWxzLndpZGdldHMudGV4dChcImVxdWlwZVwiLCBcIlwiLCBcIjEuIMOJcXVpcGVcIilcbiIsCiAgICAiZGJ1dGlscy53aWRnZXRzLmRyb3Bkb3duKFwibWVtYnJlXCIsIFwiMVwiLCBbXCIxXCIsIFwiMlwiLCBcIjNcIiwgXCI0XCJdLCBcIjIuIE1lbWJyZVwiKSIKICAgXSwKICAgImV4ZWN1dGlvbl9jb3VudCI6IG51bGwsCiAgICJvdXRwdXRzIjogW10KICB9LAogIHsKICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgImlkIjogImNlbGwtMDYiLAogICAibWV0YWRhdGEiOiB7fSwKICAgInNvdXJjZSI6IFsKICAgICJpbXBvcnQgZ2xvYiwgaW1wb3J0bGliLCBvcywgcGxhdGZvcm0sIHJlLCBzaHV0aWwsIHN5cywgdGltZSwgemlwZmlsZVxuIiwKICAgICJmcm9tIGRhdGV0aW1lIGltcG9ydCBkYXRldGltZVxuIiwKICAgICJcbiIsCiAgICAiIyAtLS0gRm91cm5pIHBhciBsZXMgb3JnYW5pc2F0ZXVycyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS1cbiIsCiAgICAiQklOQUlSRVMgPSBcIi9Wb2x1bWVzL2F1dG9tYXRob24vcGFydGFnZS9iaW5haXJlc1wiICAgICAjIHNpbXVsYXRldXIgZXQgU0RLIChsZWN0dXJlIHNldWxlKVxuIiwKICAgICJWT0xVTUVTX0VRVUlQRVMgPSBcIi9Wb2x1bWVzL2F1dG9tYXRob24vZXF1aXBlc1wiICAgICAgICMgdW4gVm9sdW1lIHBhciDDqXF1aXBlXG4iLAogICAgIlVSTF9BUkVORSA9IFwiaHR0cHM6Ly9hdXRvbWF0aG9uLWFyZW5hLTc0NzQ2NDY3MjAzODQ2MTkuYXdzLmRhdGFicmlja3NhcHBzLmNvbVwiXG4iLAogICAgIiMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLVxuIiwKICAgICJcbiIsCiAgICAiRVFVSVBFID0gcmUuc3ViKHJcIlteYS16MC05X11cIiwgXCJfXCIsIGRidXRpbHMud2lkZ2V0cy5nZXQoXCJlcXVpcGVcIikuc3RyaXAoKS5sb3dlcigpKVxuIiwKICAgICJhc3NlcnQgRVFVSVBFLCBcIlJlbnNlaWduZXogbGUgY2hhbXAgwqsgMS4gw4lxdWlwZSDCuyBlbiBoYXV0IGR1IG5vdGVib29rLCBwdWlzIHJlbGFuY2V6IGxhIGNlbGx1bGUuXCJcbiIsCiAgICAiTUVNQlJFID0gaW50KGRidXRpbHMud2lkZ2V0cy5nZXQoXCJtZW1icmVcIikpXG4iLAogICAgIlBPUlRfQkFTRSA9IDU2MDAgKyAxMDAwICogKE1FTUJSRSAtIDEpICAgICAgICAgICAgICAjIG1lbWJyZSAxIDogNTYwMC01OTk5LCBtZW1icmUgMiA6IDY2MDAtNjk5OS4uLlxuIiwKICAgICJvcy5lbnZpcm9uW1wiQVVUT01BVEhPTl9QT1JUX0JBU0VcIl0gPSBzdHIoUE9SVF9CQVNFKVxuIiwKICAgICJcbiIsCiAgICAiVk9MVU1FX0VRVUlQRSA9IGZcIntWT0xVTUVTX0VRVUlQRVN9L3tFUVVJUEV9XCIgICAgICAgICAjIHZvcyBtb2TDqGxlcyBldCB2b3MgemlwcyA6IGNvbnNlcnbDqXNcbiIsCiAgICAiTE9DQUwgPSBmXCIvdG1wL2F1dG9tYXRob25fe01FTUJSRX1cIiAgICAgICAgICAgICAgICAgICAjIGRpc3F1ZSBsb2NhbCBkdSBjbHVzdGVyIDogZWZmYWPDqSBhdSByZWTDqW1hcnJhZ2VcbiIsCiAgICAiYXNzZXJ0IG9zLnBhdGguaXNkaXIoVk9MVU1FX0VRVUlQRSksIGZcIlZvbHVtZSBpbnRyb3V2YWJsZSA6IHtWT0xVTUVfRVFVSVBFfS4gVsOpcmlmaWV6IGwnaWRlbnRpZmlhbnQgZCfDqXF1aXBlLlwiXG4iLAogICAgImZvciBkb3NzaWVyIGluIChcIm1vZGVsZXNcIiwgXCJjaGVja3BvaW50c1wiLCBcInNvdW1pc3Npb25zXCIpOlxuIiwKICAgICIgICAgb3MubWFrZWRpcnMoZlwie1ZPTFVNRV9FUVVJUEV9L3tkb3NzaWVyfVwiLCBleGlzdF9vaz1UcnVlKVxuIiwKICAgICJwcmludChmXCLDiXF1aXBlIHtFUVVJUEV9LCBtZW1icmUge01FTUJSRX0uIFZvbHVtZSA6IHtWT0xVTUVfRVFVSVBFfVwiKSIKICAgXSwKICAgImV4ZWN1dGlvbl9jb3VudCI6IG51bGwsCiAgICJvdXRwdXRzIjogW10KICB9LAogIHsKICAgImNlbGxfdHlwZSI6ICJtYXJrZG93biIsCiAgICJpZCI6ICJjZWxsLTA3IiwKICAgIm1ldGFkYXRhIjoge30sCiAgICJzb3VyY2UiOiBbCiAgICAiIyMgMy4gTGUgamV1IHN1ciBsZSBjbHVzdGVyXG4iLAogICAgIlxuIiwKICAgICJEw6ljb21wcmVzc2UgbGUgKipIZWFkbGVzcyoqIChsZSBqZXUgc2FucyBhZmZpY2hhZ2UsIGJpZW4gcGx1cyByYXBpZGUgcXVlIGxlIHRlbXBzIHLDqWVsKSBldCBsZSBTREsgUHl0aG9uXG4iLAogICAgInN1ciBsZSBkaXNxdWUgbG9jYWwsIGRhbnMgbGEgdmVyc2lvbiBxdWkgY29ycmVzcG9uZCBhdSBwcm9jZXNzZXVyIGR1IGNsdXN0ZXIuIFB1aXMgdW5lIHBhcnRpZSBhdSBoYXNhcmRcbiIsCiAgICAiY29udHJlIGBydXNoX2JvdGAsIHBvdXIgdsOpcmlmaWVyIHF1ZSB0b3V0IG1hcmNoZS4iCiAgIF0KICB9LAogIHsKICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgImlkIjogImNlbGwtMDgiLAogICAibWV0YWRhdGEiOiB7fSwKICAgInNvdXJjZSI6IFsKICAgICJBUkNIID0gcGxhdGZvcm0ubWFjaGluZSgpXG4iLAogICAgIkpFVSA9IGZcIntMT0NBTH0vamV1XCJcbiIsCiAgICAiaWYgbm90IGdsb2IuZ2xvYihmXCJ7SkVVfS8qKi9QeXRob25BSS9icmlkZ2VcIiwgcmVjdXJzaXZlPVRydWUpOlxuIiwKICAgICIgICAgYnVpbGRzID0gW1wiTGludXgtQVJNLWRhdGFicmlja3MuemlwXCJdIGlmIEFSQ0ggaW4gKFwiYWFyY2g2NFwiLCBcImFybTY0XCIpIGVsc2UgW1wiSGVhZGxlc3MtbGludXgteDY0LnppcFwiLCBcIlB5dGhvbkFJLnppcFwiXVxuIiwKICAgICIgICAgZm9yIHogaW4gYnVpbGRzOlxuIiwKICAgICIgICAgICAgIGFzc2VydCBvcy5wYXRoLmV4aXN0cyhmXCJ7QklOQUlSRVN9L3t6fVwiKSwgZlwie3p9IGludHJvdXZhYmxlIGRhbnMge0JJTkFJUkVTfSA6IHByw6l2ZW5leiB1biBvcmdhbmlzYXRldXIuXCJcbiIsCiAgICAiICAgICAgICB6aXBmaWxlLlppcEZpbGUoZlwie0JJTkFJUkVTfS97en1cIikuZXh0cmFjdGFsbChKRVUpXG4iLAogICAgIkhFQURMRVNTID0gW3AgZm9yIHAgaW4gZ2xvYi5nbG9iKGZcIntKRVV9LyoqL0hlYWRsZXNzXCIsIHJlY3Vyc2l2ZT1UcnVlKSBpZiBvcy5wYXRoLmlzZmlsZShwKV1bMF1cbiIsCiAgICAiU0RLID0gb3MucGF0aC5kaXJuYW1lKGdsb2IuZ2xvYihmXCJ7SkVVfS8qKi9QeXRob25BSS9icmlkZ2VcIiwgcmVjdXJzaXZlPVRydWUpWzBdKVxuIiwKICAgICJmb3IgZiBpbiBvcy5saXN0ZGlyKG9zLnBhdGguZGlybmFtZShIRUFETEVTUykpOlxuIiwKICAgICIgICAgb3MuY2htb2Qob3MucGF0aC5qb2luKG9zLnBhdGguZGlybmFtZShIRUFETEVTUyksIGYpLCAwbzc1NSlcbiIsCiAgICAib3MuZW52aXJvbltcIkFVVE9NQVRIT05fSEVBRExFU1NfUEFUSFwiXSA9IEhFQURMRVNTXG4iLAogICAgImlmIFNESyBub3QgaW4gc3lzLnBhdGg6XG4iLAogICAgIiAgICBzeXMucGF0aC5pbnNlcnQoMCwgU0RLKVxuIiwKICAgICJcbiIsCiAgICAiZnJvbSBjb3JlLmVudiBpbXBvcnQgQXV0b21hdGhvbkVudlxuIiwKICAgICJmcm9tIHRyYWluaW5nLnV0aWxzIGltcG9ydCBsYXVuY2hfaGVhZGxlc3NcbiIsCiAgICAiXG4iLAogICAgInBvcnQgPSBQT1JUX0JBU0UgKyAzMDBcbiIsCiAgICAiaGVhZGxlc3MgPSBsYXVuY2hfaGVhZGxlc3MocG9ydClcbiIsCiAgICAiZW52ID0gQXV0b21hdGhvbkVudih0Y3BfcG9ydD1zdHIocG9ydCkpXG4iLAogICAgImVudi5zZXRfb3Bwb25lbnRfYnlfbmFtZShcInJ1c2hfYm90XCIpXG4iLAogICAgInRyeTpcbiIsCiAgICAiICAgIG9icywgXyA9IGVudi5yZXNldCgpXG4iLAogICAgIiAgICBmb3IgZnJhbWUgaW4gcmFuZ2UoMzYwMCk6ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAjIDMgNjAwIGZyYW1lcyA9IDYwIHMgZGUgamV1XG4iLAogICAgIiAgICAgICAgb2JzLCByZXdhcmQsIHRlcm1pbmF0ZWQsIHRydW5jYXRlZCwgXyA9IGVudi5zdGVwKGVudi5hY3Rpb25fc3BhY2Uuc2FtcGxlKCkpXG4iLAogICAgIiAgICAgICAgaWYgdGVybWluYXRlZCBvciB0cnVuY2F0ZWQ6XG4iLAogICAgIiAgICAgICAgICAgIGJyZWFrXG4iLAogICAgIiAgICBldGF0ID0gZW52Ll9sYXN0X3N0YXRlXG4iLAogICAgIiAgICBwcmludChmXCJPSyA6IHByb2Nlc3NldXIge0FSQ0h9LCB7b3MuY3B1X2NvdW50KCl9IGPFk3Vycy4gUGFydGllIGF1IGhhc2FyZCBmaW5pZSBhcHLDqHMge2ZyYW1lICsgMX0gZnJhbWVzLCBcIlxuIiwKICAgICIgICAgICAgICAgZlwiUFYge2V0YXQuU2VsZlRhbmsuSGVhbHRoIGlmIGV0YXQuU2VsZlRhbmsgZWxzZSAwfSBjb250cmUge2V0YXQuRW5lbXlUYW5rLkhlYWx0aCBpZiBldGF0LkVuZW15VGFuayBlbHNlIDB9LlwiKVxuIiwKICAgICJmaW5hbGx5OlxuIiwKICAgICIgICAgZW52LmdhbWUuZW5kX3RyYWluaW5nKClcbiIsCiAgICAiICAgIGhlYWRsZXNzLmtpbGwoKSIKICAgXSwKICAgImV4ZWN1dGlvbl9jb3VudCI6IG51bGwsCiAgICJvdXRwdXRzIjogW10KICB9LAogIHsKICAgImNlbGxfdHlwZSI6ICJtYXJrZG93biIsCiAgICJpZCI6ICJjZWxsLTA5IiwKICAgIm1ldGFkYXRhIjoge30sCiAgICJzb3VyY2UiOiBbCiAgICAiIyMgNC4gVm90cmUgYWdlbnRcbiIsCiAgICAiXG4iLAogICAgIlVuIGFnZW50LCBjJ2VzdCB1biBkb3NzaWVyIGF2ZWMgdW4gZmljaGllciBgYWdlbnQucHlgIHF1aSBjb250aWVudCB1bmUgY2xhc3NlIGBQYXJ0aWNpcGFudEFnZW50YCBldCB1bmUgbcOpdGhvZGVcbiIsCiAgICAiYGdldF9hY3Rpb24oc3RhdGUpIC0+IEFJQWN0aW9uYC4gTGUgbsO0dHJlIGVzdCB1biByw6lzZWF1IGRlIG5ldXJvbmVzIDogYGZlYXR1cmVfZXh0cmFjdG9yLnB5YCByw6lzdW1lIGwnw6l0YXQgZHUgamV1XG4iLAogICAgImVuIDgyIG5vbWJyZXMsIGxlIHLDqXNlYXUgZW4gZMOpZHVpdCA4LCBjb252ZXJ0aXMgZW4gY29tbWFuZGVzIChkw6lwbGFjZW1lbnQsIHZpc8OpZSwgbWl0cmFpbGxldXNlLCBtaXNzaWxlLFxuIiwKICAgICJib3VjbGllciwgZGFzaCkuIExlIHLDqXNlYXUgZW50cmHDrm7DqSBlc3QgZGFucyBgbW9kZWwuemlwYCwgw6AgY8O0dMOpLlxuIiwKICAgICJcbiIsCiAgICAiUG91ciBtb2RpZmllciBsJ2FnZW50LCBtb2RpZmlleiBsZSBjb2RlIGRlIGNldHRlIGNlbGx1bGUgcHVpcyByZWxhbmNlei1sYS4iCiAgIF0KICB9LAogIHsKICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgImlkIjogImNlbGwtMTAiLAogICAibWV0YWRhdGEiOiB7fSwKICAgInNvdXJjZSI6IFsKICAgICJBR0VOVF9DT0RFID0gJycnXG4iLAogICAgImZyb20gcGF0aGxpYiBpbXBvcnQgUGF0aFxuIiwKICAgICJcbiIsCiAgICAiZnJvbSBzdGFibGVfYmFzZWxpbmVzMyBpbXBvcnQgUFBPXG4iLAogICAgIlxuIiwKICAgICJmcm9tIGJyaWRnZS5kYXRhdHlwZXMgaW1wb3J0IEFJQWN0aW9uLCBHYW1lU3RhdGUsIFZlY3RvcjJJbnRcbiIsCiAgICAiZnJvbSAuZmVhdHVyZV9leHRyYWN0b3IgaW1wb3J0IGV4dHJhY3RfZmVhdHVyZXNcbiIsCiAgICAiXG4iLAogICAgIlxuIiwKICAgICJkZWYgdmVyc19hY3Rpb24oYSkgLT4gQUlBY3Rpb246XG4iLAogICAgIiAgICAjIDggdmFsZXVycyBkYW5zIFstMSwgMV0gLT4gY29tbWFuZGVzIGR1IHZhaXNzZWF1IChtw6ptZSBjb252ZXJzaW9uIHF1J8OgIGwnZW50cmHDrm5lbWVudClcbiIsCiAgICAiICAgIHJldHVybiBBSUFjdGlvbihcbiIsCiAgICAiICAgICAgICBNb3ZpbmdEaXJlY3Rpb249VmVjdG9yMkludChYPWludChhWzBdICogMTAwMCksIFk9aW50KGFbMV0gKiAxMDAwKSksXG4iLAogICAgIiAgICAgICAgQWltaW5nRGlyZWN0aW9uPVZlY3RvcjJJbnQoWD1pbnQoYVsyXSAqIDEwMDApLCBZPWludChhWzNdICogMTAwMCkpLFxuIiwKICAgICIgICAgICAgIE1hY2hpbmVHdW49Ym9vbChhWzRdID4gMCksIE1pc3NpbGU9Ym9vbChhWzVdID4gMCksIFNoaWVsZD1ib29sKGFbNl0gPiAwKSwgRGFzaD1ib29sKGFbN10gPiAwKSxcbiIsCiAgICAiICAgIClcbiIsCiAgICAiXG4iLAogICAgIlxuIiwKICAgICJjbGFzcyBQYXJ0aWNpcGFudEFnZW50OlxuIiwKICAgICIgICAgZGVmIF9faW5pdF9fKHNlbGYpOlxuIiwKICAgICIgICAgICAgIHNlbGYubW9kZWwgPSBQUE8ubG9hZChQYXRoKF9fZmlsZV9fKS5wYXJlbnQgLyBcIm1vZGVsLnppcFwiLCBkZXZpY2U9XCJjcHVcIilcbiIsCiAgICAiXG4iLAogICAgIiAgICBkZWYgZ2V0X2FjdGlvbihzZWxmLCBzdGF0ZTogR2FtZVN0YXRlKSAtPiBBSUFjdGlvbjpcbiIsCiAgICAiICAgICAgICBhY3Rpb24sIF8gPSBzZWxmLm1vZGVsLnByZWRpY3QoZXh0cmFjdF9mZWF0dXJlcyhzdGF0ZSksIGRldGVybWluaXN0aWM9VHJ1ZSlcbiIsCiAgICAiICAgICAgICByZXR1cm4gdmVyc19hY3Rpb24oYWN0aW9uKVxuIiwKICAgICInJydcbiIsCiAgICAiXG4iLAogICAgIkFHRU5UX0RJUiA9IGZcIntTREt9L2FnZW50cy97RVFVSVBFfVwiXG4iLAogICAgIm9zLm1ha2VkaXJzKEFHRU5UX0RJUiwgZXhpc3Rfb2s9VHJ1ZSlcbiIsCiAgICAib3BlbihmXCJ7QUdFTlRfRElSfS9fX2luaXRfXy5weVwiLCBcIndcIikuY2xvc2UoKVxuIiwKICAgICJ3aXRoIG9wZW4oZlwie0FHRU5UX0RJUn0vYWdlbnQucHlcIiwgXCJ3XCIpIGFzIGY6XG4iLAogICAgIiAgICBmLndyaXRlKEFHRU5UX0NPREUubHN0cmlwKCkpXG4iLAogICAgInNodXRpbC5jb3B5KGZcIntTREt9L2FnZW50cy9uZXVyYWxfZXhwZXJ0X2JvdC9mZWF0dXJlX2V4dHJhY3Rvci5weVwiLCBmXCJ7QUdFTlRfRElSfS9mZWF0dXJlX2V4dHJhY3Rvci5weVwiKVxuIiwKICAgICJpbXBvcnRsaWIuaW52YWxpZGF0ZV9jYWNoZXMoKVxuIiwKICAgICJwcmludChcIkFnZW50IDpcIiwgQUdFTlRfRElSKSIKICAgXSwKICAgImV4ZWN1dGlvbl9jb3VudCI6IG51bGwsCiAgICJvdXRwdXRzIjogW10KICB9LAogIHsKICAgImNlbGxfdHlwZSI6ICJtYXJrZG93biIsCiAgICJpZCI6ICJjZWxsLTExIiwKICAgIm1ldGFkYXRhIjoge30sCiAgICJzb3VyY2UiOiBbCiAgICAiIyMgNS4gRW50cmHDrm5lciBhdmVjIFBQT1xuIiwKICAgICJcbiIsCiAgICAiUFBPIGZhaXQgam91ZXIgdm90cmUgYWdlbnQgZGFucyBwbHVzaWV1cnMgcGFydGllcyBlbiBwYXJhbGzDqGxlICh1biBIZWFkbGVzcyBwYXIgcGFydGllKSwgcHVpcyBhanVzdGUgbGUgcsOpc2VhdVxuIiwKICAgICJwb3VyIGdhZ25lciBwbHVzIGRlIHLDqWNvbXBlbnNlLiAqKlRvdXMgdm9zIGVzc2FpcyBwYXNzZW50IHBhciBsYSBjZWxsdWxlIGRlIHLDqWdsYWdlcyBjaS1kZXNzb3VzLioqXG4iLAogICAgIlBlbmRhbnQgbCdlbnRyYcOubmVtZW50LCBzdXJ2ZWlsbGV6IGBlcF9yZXdfbWVhbmAgKHLDqWNvbXBlbnNlIG1veWVubmUgcGFyIHBhcnRpZSkgOiBlbGxlIGRvaXQgbW9udGVyLiIKICAgXQogIH0sCiAgewogICAiY2VsbF90eXBlIjogImNvZGUiLAogICAiaWQiOiAiY2VsbC0xMiIsCiAgICJtZXRhZGF0YSI6IHt9LAogICAic291cmNlIjogWwogICAgIiMgLS0tIFLDqWdsYWdlcyA6IGMnZXN0IGljaSBxdWUgdm91cyBleHDDqXJpbWVudGV6ICEgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tXG4iLAogICAgIkRFUEFSVCA9IFwiYmNcIiAgICAgICAgICAjIFwiYmNcIiA6IHLDqXNlYXUgcXVpIGltaXRlIGTDqWrDoCBleHBlcnRfbWFzdGVyX2JvdCDCtyBcImRlcm5pZXJcIiA6IHZvdHJlIGRlcm5pZXIgbW9kw6hsZSDCtyBcInplcm9cIiA6IHLDqXNlYXUgbmV1ZlxuIiwKICAgICJBRFZFUlNBSVJFID0gXCJydXNoX2JvdFwiICAjIHRhcmdldF9ib3QsIHJhbmRvbV9zaG9vdGVyX2JvdCwgcnVzaF9ib3QsIGtpdGVyX2JvdCwgc21hcnRfZGFzaF9ib3QsIGV4cGVydF9tYXN0ZXJfYm90Li4uXG4iLAogICAgIlRJTUVTVEVQUyA9IDIwMF8wMDAgICAgIyBmcmFtZXMgZGUgamV1IGN1bXVsw6llcyBzdXIgdG91dGVzIGxlcyBwYXJ0aWVzICgyMDAgMDAwIDogZW52aXJvbiAyIG1pbilcbiIsCiAgICAiTkJfRU5WUyA9IDQgICAgICAgICAgICAjIHBhcnRpZXMgZW4gcGFyYWxsw6hsZS4gTGUgY2x1c3RlciBlc3QgcGFydGFnw6kgOiDDoCBxdWF0cmUsIDQgY2hhY3VuIGF1IHBsdXNcbiIsCiAgICAiUkVDT01QRU5TRSA9IGRpY3QodGltZV9wZW5hbHR5PTAuMSwgZGFtYWdlX2RlYWx0X2NvZWY9MS4wLCBwYWluX2ZhY3Rvcj0wLjEsXG4iLAogICAgIiAgICAgICAgICAgICAgICAgIHdpbl9ib251cz0xMDAwLjAsIGxvc3NfcGVuYWx0eT0xMDAwLjAsIGRyYXdfcGVuYWx0eT0xMDAwLjAsIG9vYl9wZW5hbHR5PTEwMDAuMClcbiIsCiAgICAiUFBPX1BBUkFNUyA9IGRpY3QobGVhcm5pbmdfcmF0ZT0zZS00LCBuX3N0ZXBzPTIwNDgsIGJhdGNoX3NpemU9MTAyNCwgZ2FtbWE9MC45OSwgZW50X2NvZWY9MC4wKSIKICAgXSwKICAgImV4ZWN1dGlvbl9jb3VudCI6IG51bGwsCiAgICJvdXRwdXRzIjogW10KICB9LAogIHsKICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgImlkIjogImNlbGwtMTMiLAogICAibWV0YWRhdGEiOiB7fSwKICAgInNvdXJjZSI6IFsKICAgICJmcm9tIHN0YWJsZV9iYXNlbGluZXMzIGltcG9ydCBQUE9cbiIsCiAgICAiZnJvbSBzdGFibGVfYmFzZWxpbmVzMy5jb21tb24uY2FsbGJhY2tzIGltcG9ydCBCYXNlQ2FsbGJhY2tcbiIsCiAgICAiZnJvbSBzdGFibGVfYmFzZWxpbmVzMy5jb21tb24udmVjX2VudiBpbXBvcnQgU3VicHJvY1ZlY0VudiwgVmVjTW9uaXRvclxuIiwKICAgICJcbiIsCiAgICAiXG4iLAogICAgImRlZiBtYWtlX2Vudihwb3J0KTpcbiIsCiAgICAiICAgIFwiXCJcIlVuZSBwYXJ0aWUgSGVhZGxlc3MgPSB1biBlbnZpcm9ubmVtZW50LCBkYW5zIHNvbiBwcm9wcmUgcHJvY2Vzc3VzLlwiXCJcIlxuIiwKICAgICIgICAgZGVmIF9pbml0KCk6XG4iLAogICAgIiAgICAgICAgZnJvbSBjb3JlLmVudiBpbXBvcnQgQXV0b21hdGhvbkVudlxuIiwKICAgICIgICAgICAgIGZyb20gdHJhaW5pbmcudXRpbHMgaW1wb3J0IGxhdW5jaF9oZWFkbGVzc1xuIiwKICAgICIgICAgICAgIGV4dHJhY3RfZmVhdHVyZXMgPSBpbXBvcnRsaWIuaW1wb3J0X21vZHVsZShmXCJhZ2VudHMue0VRVUlQRX0uZmVhdHVyZV9leHRyYWN0b3JcIikuZXh0cmFjdF9mZWF0dXJlc1xuIiwKICAgICIgICAgICAgIGhlYWRsZXNzID0gbGF1bmNoX2hlYWRsZXNzKHBvcnQsIHRpbWVvdXQ9NjApXG4iLAogICAgIiAgICAgICAgZW52ID0gQXV0b21hdGhvbkVudih0Y3BfcG9ydD1zdHIocG9ydCksIGV4dHJhY3Rvcl9mbj1leHRyYWN0X2ZlYXR1cmVzLCByZXdhcmRfa3dhcmdzPVJFQ09NUEVOU0UpXG4iLAogICAgIiAgICAgICAgZW52LnNldF9vcHBvbmVudF9ieV9uYW1lKEFEVkVSU0FJUkUpXG4iLAogICAgIlxuIiwKICAgICIgICAgICAgIGRlZiBjbG9zZSgpOlxuIiwKICAgICIgICAgICAgICAgICBmb3IgYXJyZXRlciBpbiAoZW52LmdhbWUuZW5kX3RyYWluaW5nLCBoZWFkbGVzcy5raWxsKTpcbiIsCiAgICAiICAgICAgICAgICAgICAgIHRyeTpcbiIsCiAgICAiICAgICAgICAgICAgICAgICAgICBhcnJldGVyKClcbiIsCiAgICAiICAgICAgICAgICAgICAgIGV4Y2VwdCBFeGNlcHRpb246XG4iLAogICAgIiAgICAgICAgICAgICAgICAgICAgcGFzc1xuIiwKICAgICIgICAgICAgIGVudi5jbG9zZSA9IGNsb3NlXG4iLAogICAgIiAgICAgICAgcmV0dXJuIGVudlxuIiwKICAgICIgICAgcmV0dXJuIF9pbml0XG4iLAogICAgIlxuIiwKICAgICJcbiIsCiAgICAiY2xhc3MgU2F1dmVnYXJkZVZvbHVtZShCYXNlQ2FsbGJhY2spOlxuIiwKICAgICIgICAgXCJcIlwiQ29waWUgbGUgbW9kw6hsZSBkYW5zIGxlIFZvbHVtZSB0b3V0ZXMgbGVzIDUwIDAwMCBmcmFtZXMgOiBpbCBzdXJ2aXQgw6AgdW4gcmVkw6ltYXJyYWdlIGR1IGNsdXN0ZXIuXCJcIlwiXG4iLAogICAgIiAgICBkZWYgX19pbml0X18oc2VsZiwgdG91c19sZXM9NTBfMDAwKTpcbiIsCiAgICAiICAgICAgICBzdXBlcigpLl9faW5pdF9fKClcbiIsCiAgICAiICAgICAgICBzZWxmLnRvdXNfbGVzLCBzZWxmLnByb2NoYWluID0gdG91c19sZXMsIHRvdXNfbGVzXG4iLAogICAgIlxuIiwKICAgICIgICAgZGVmIF9vbl9zdGVwKHNlbGYpOlxuIiwKICAgICIgICAgICAgIGlmIHNlbGYubnVtX3RpbWVzdGVwcyA+PSBzZWxmLnByb2NoYWluOlxuIiwKICAgICIgICAgICAgICAgICBzZWxmLnByb2NoYWluICs9IHNlbGYudG91c19sZXNcbiIsCiAgICAiICAgICAgICAgICAgc2VsZi5tb2RlbC5zYXZlKGZcIntMT0NBTH0vY2hlY2twb2ludC56aXBcIikgICAgICAgICAgICAgICMgdW4gemlwIHMnw6ljcml0IGVuIGxvY2FsLi4uXG4iLAogICAgIiAgICAgICAgICAgIHNodXRpbC5jb3B5KGZcIntMT0NBTH0vY2hlY2twb2ludC56aXBcIiwgZlwie1ZPTFVNRV9FUVVJUEV9L2NoZWNrcG9pbnRzL3tSVU59X3tzZWxmLm51bV90aW1lc3RlcHN9LnppcFwiKVxuIiwKICAgICIgICAgICAgIHJldHVybiBUcnVlICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAjIC4uLnB1aXMgc2UgY29waWUgZGFucyBsZSBWb2x1bWVcbiIsCiAgICAiXG4iLAogICAgIlxuIiwKICAgICJSVU4gPSBmXCJ7ZGF0ZXRpbWUubm93KCk6JW0lZF8lSCVNfV9te01FTUJSRX1cIlxuIiwKICAgICJwcmVjZWRlbnRzID0gc29ydGVkKGdsb2IuZ2xvYihmXCJ7Vk9MVU1FX0VRVUlQRX0vbW9kZWxlcy8qLnppcFwiKSwga2V5PW9zLnBhdGguZ2V0bXRpbWUpXG4iLAogICAgImRlcGFydCA9IHtcImJjXCI6IGZcIntTREt9L3RyYWluaW5nL2JjX21vZGVsLnppcFwiLCBcImRlcm5pZXJcIjogcHJlY2VkZW50c1stMV0gaWYgcHJlY2VkZW50cyBlbHNlIE5vbmUsIFwiemVyb1wiOiBOb25lfVtERVBBUlRdXG4iLAogICAgIlxuIiwKICAgICJ2ZWNfZW52ID0gVmVjTW9uaXRvcihTdWJwcm9jVmVjRW52KFttYWtlX2VudihQT1JUX0JBU0UgKyBpKSBmb3IgaSBpbiByYW5nZShOQl9FTlZTKV0pKVxuIiwKICAgICJ0cnk6XG4iLAogICAgIiAgICBpZiBkZXBhcnQ6XG4iLAogICAgIiAgICAgICAgcHJpbnQoXCJEw6lwYXJ0IDpcIiwgb3MucGF0aC5iYXNlbmFtZShkZXBhcnQpKVxuIiwKICAgICIgICAgICAgIG1vZGVsID0gUFBPLmxvYWQoZGVwYXJ0LCBlbnY9dmVjX2VudiwgZGV2aWNlPVwiY3B1XCIsIHZlcmJvc2U9MSwgKipQUE9fUEFSQU1TKVxuIiwKICAgICIgICAgZWxzZTpcbiIsCiAgICAiICAgICAgICBwcmludChcIkTDqXBhcnQgOiByw6lzZWF1IG5ldWZcIilcbiIsCiAgICAiICAgICAgICBtb2RlbCA9IFBQTyhcIk1scFBvbGljeVwiLCB2ZWNfZW52LCBkZXZpY2U9XCJjcHVcIiwgdmVyYm9zZT0xLCAqKlBQT19QQVJBTVMpXG4iLAogICAgIiAgICBkZWJ1dCA9IHRpbWUudGltZSgpXG4iLAogICAgIiAgICBtb2RlbC5sZWFybih0b3RhbF90aW1lc3RlcHM9VElNRVNURVBTLCBjYWxsYmFjaz1TYXV2ZWdhcmRlVm9sdW1lKCkpXG4iLAogICAgIiAgICBwcmludChmXCJFbnRyYcOubmVtZW50IHRlcm1pbsOpIGVuIHsodGltZS50aW1lKCkgLSBkZWJ1dCkgLyA2MDouMWZ9IG1pblwiKVxuIiwKICAgICJmaW5hbGx5OlxuIiwKICAgICIgICAgdmVjX2Vudi5jbG9zZSgpXG4iLAogICAgIlxuIiwKICAgICJtb2RlbC5zYXZlKGZcIntMT0NBTH0vbW9kZWwuemlwXCIpXG4iLAogICAgInNodXRpbC5jb3B5KGZcIntMT0NBTH0vbW9kZWwuemlwXCIsIGZcIntBR0VOVF9ESVJ9L21vZGVsLnppcFwiKVxuIiwKICAgICJzaHV0aWwuY29weShmXCJ7TE9DQUx9L21vZGVsLnppcFwiLCBmXCJ7Vk9MVU1FX0VRVUlQRX0vbW9kZWxlcy97RVFVSVBFfV97UlVOfS56aXBcIilcbiIsCiAgICAicHJpbnQoXCJNb2TDqGxlIGVucmVnaXN0csOpIDpcIiwgZlwie1ZPTFVNRV9FUVVJUEV9L21vZGVsZXMve0VRVUlQRX1fe1JVTn0uemlwXCIpIgogICBdLAogICAiZXhlY3V0aW9uX2NvdW50IjogbnVsbCwKICAgIm91dHB1dHMiOiBbXQogIH0sCiAgewogICAiY2VsbF90eXBlIjogIm1hcmtkb3duIiwKICAgImlkIjogImNlbGwtMTQiLAogICAibWV0YWRhdGEiOiB7fSwKICAgInNvdXJjZSI6IFsKICAgICIjIyA2LiBUZXN0ZXIgY29udHJlIGxlcyBib3RzXG4iLAogICAgIlxuIiwKICAgICJWb3RyZSBhZ2VudCBqb3VlIDcgcGFydGllcyBjb250cmUgcXVlbHF1ZXMgYm90cyAoViA9IHZpY3RvaXJlcywgTiA9IG51bHMsIEQgPSBkw6lmYWl0ZXMpLiBBdmVjIHNpIHBldSBkZSBwYXJ0aWVzLFxuIiwKICAgICJsZSBoYXNhcmQgY29tcHRlIDogY29tcGFyZXogZGV1eCBtb2TDqGxlcyBzdXIgYXUgbW9pbnMgMjEgcGFydGllcyBhdmFudCBkZSBjb25jbHVyZS4iCiAgIF0KICB9LAogIHsKICAgImNlbGxfdHlwZSI6ICJjb2RlIiwKICAgImlkIjogImNlbGwtMTUiLAogICAibWV0YWRhdGEiOiB7fSwKICAgInNvdXJjZSI6IFsKICAgICJmcm9tIGV2YWx1YXRpb24ucnVuX21hdGNodXAgaW1wb3J0IHBsYXlfbWF0Y2h1cFxuIiwKICAgICJcbiIsCiAgICAicG9ydCA9IFBPUlRfQkFTRSArIDIwMFxuIiwKICAgICJoZWFkbGVzcyA9IGxhdW5jaF9oZWFkbGVzcyhwb3J0KVxuIiwKICAgICJlbnYgPSBBdXRvbWF0aG9uRW52KHRjcF9wb3J0PXN0cihwb3J0KSlcbiIsCiAgICAidHJ5OlxuIiwKICAgICIgICAgZm9yIG5vbSBpbiBbXCJ0YXJnZXRfYm90XCIsIFwicnVzaF9ib3RcIiwgXCJraXRlcl9ib3RcIiwgXCJleHBlcnRfbWFzdGVyX2JvdFwiXTpcbiIsCiAgICAiICAgICAgICBhZHZlcnNhaXJlID0gaW1wb3J0bGliLmltcG9ydF9tb2R1bGUoZlwiYWdlbnRzLntub219LmFnZW50XCIpLlBhcnRpY2lwYW50QWdlbnQoKVxuIiwKICAgICIgICAgICAgIG1vbl9hZ2VudCA9IGltcG9ydGxpYi5pbXBvcnRfbW9kdWxlKGZcImFnZW50cy57RVFVSVBFfS5hZ2VudFwiKS5QYXJ0aWNpcGFudEFnZW50KClcbiIsCiAgICAiICAgICAgICBfLCB2LCBkLCBuID0gcGxheV9tYXRjaHVwKGVudiwgbW9uX2FnZW50LCBhZHZlcnNhaXJlLCA3LCB2ZXJib3NlPUZhbHNlKVxuIiwKICAgICIgICAgICAgIHByaW50KGZcImNvbnRyZSB7bm9tOjwxOH0ge3Z9IFYgLyB7bn0gTiAvIHtkfSBEXCIpXG4iLAogICAgImZpbmFsbHk6XG4iLAogICAgIiAgICBlbnYuZ2FtZS5lbmRfdHJhaW5pbmcoKVxuIiwKICAgICIgICAgaGVhZGxlc3Mua2lsbCgpIgogICBdLAogICAiZXhlY3V0aW9uX2NvdW50IjogbnVsbCwKICAgIm91dHB1dHMiOiBbXQogIH0sCiAgewogICAiY2VsbF90eXBlIjogIm1hcmtkb3duIiwKICAgImlkIjogImNlbGwtMTYiLAogICAibWV0YWRhdGEiOiB7fSwKICAgInNvdXJjZSI6IFsKICAgICIjIyA3LiBQcsOpcGFyZXIgbGUgemlwIHBvdXIgbCdBcsOobmVcbiIsCiAgICAiXG4iLAogICAgIkxlIHppcCBjb250aWVudCBgYWdlbnQucHlgLCBgZmVhdHVyZV9leHRyYWN0b3IucHlgIGV0IGBtb2RlbC56aXBgLiBBdmFudCBkZSBsJ2VucmVnaXN0cmVyLCBsYSBjZWxsdWxlIGxlIHbDqXJpZmllXG4iLAogICAgIioqY29tbWUgbGUgZmFpdCBsJ0Fyw6huZSoqIDogZWxsZSBsZSBkw6ljb21wcmVzc2Ugw6AgcGFydCwgY2hhcmdlIGwnYWdlbnQgZXQgbHVpIGZhaXQgam91ZXIgdW5lIHBhcnRpZSBjb250cmVcbiIsCiAgICAiYGR1bW15X2JvdGAsIGVuIG1lc3VyYW50IGxlIHRlbXBzIGRlIHLDqXBvbnNlIHBhciBjb3VwLiIKICAgXQogIH0sCiAgewogICAiY2VsbF90eXBlIjogImNvZGUiLAogICAiaWQiOiAiY2VsbC0xNyIsCiAgICJtZXRhZGF0YSI6IHt9LAogICAic291cmNlIjogWwogICAgIm5vbSA9IGZcIntFUVVJUEV9X3tkYXRldGltZS5ub3coKTolbSVkXyVIJU19X217TUVNQlJFfVwiXG4iLAogICAgImFyY2hpdmUgPSBmXCJ7TE9DQUx9L3tub219LnppcFwiXG4iLAogICAgIndpdGggemlwZmlsZS5aaXBGaWxlKGFyY2hpdmUsIFwid1wiLCB6aXBmaWxlLlpJUF9ERUZMQVRFRCkgYXMgemY6ICAgICAgICAgICMgdW4gemlwIHMnw6ljcml0IGVuIGxvY2FsLi4uXG4iLAogICAgIiAgICBmb3IgZmljaGllciBpbiAoXCJhZ2VudC5weVwiLCBcImZlYXR1cmVfZXh0cmFjdG9yLnB5XCIsIFwibW9kZWwuemlwXCIpOlxuIiwKICAgICIgICAgICAgIHpmLndyaXRlKGZcIntBR0VOVF9ESVJ9L3tmaWNoaWVyfVwiLCBmaWNoaWVyKVxuIiwKICAgICJcbiIsCiAgICAiIyBWw6lyaWZpY2F0aW9uIGNvbW1lIGRhbnMgbCdBcsOobmUgOiB6aXAgZMOpY29tcHJlc3PDqSDDoCBwYXJ0LCB1bmUgcGFydGllIGNvbnRyZSBkdW1teV9ib3RcbiIsCiAgICAidmVyaWYgPSBmXCJ7RVFVSVBFfV92ZXJpZlwiXG4iLAogICAgInNodXRpbC5ybXRyZWUoZlwie1NES30vYWdlbnRzL3t2ZXJpZn1cIiwgaWdub3JlX2Vycm9ycz1UcnVlKVxuIiwKICAgICJ6aXBmaWxlLlppcEZpbGUoYXJjaGl2ZSkuZXh0cmFjdGFsbChmXCJ7U0RLfS9hZ2VudHMve3ZlcmlmfVwiKVxuIiwKICAgICJvcGVuKGZcIntTREt9L2FnZW50cy97dmVyaWZ9L19faW5pdF9fLnB5XCIsIFwid1wiKS5jbG9zZSgpXG4iLAogICAgImltcG9ydGxpYi5pbnZhbGlkYXRlX2NhY2hlcygpXG4iLAogICAgImFnZW50ID0gaW1wb3J0bGliLmltcG9ydF9tb2R1bGUoZlwiYWdlbnRzLnt2ZXJpZn0uYWdlbnRcIikuUGFydGljaXBhbnRBZ2VudCgpXG4iLAogICAgInRlbXBzID0gW11cbiIsCiAgICAiZ2V0X2FjdGlvbiA9IGFnZW50LmdldF9hY3Rpb25cbiIsCiAgICAiZGVmIGNocm9ub21ldHJlKHN0YXRlKTpcbiIsCiAgICAiICAgIHQgPSB0aW1lLnBlcmZfY291bnRlcigpXG4iLAogICAgIiAgICBhY3Rpb24gPSBnZXRfYWN0aW9uKHN0YXRlKVxuIiwKICAgICIgICAgdGVtcHMuYXBwZW5kKCh0aW1lLnBlcmZfY291bnRlcigpIC0gdCkgKiAxMDAwKVxuIiwKICAgICIgICAgcmV0dXJuIGFjdGlvblxuIiwKICAgICJhZ2VudC5nZXRfYWN0aW9uID0gY2hyb25vbWV0cmVcbiIsCiAgICAiXG4iLAogICAgInBvcnQgPSBQT1JUX0JBU0UgKyAyNTBcbiIsCiAgICAiaGVhZGxlc3MgPSBsYXVuY2hfaGVhZGxlc3MocG9ydClcbiIsCiAgICAiZW52ID0gQXV0b21hdGhvbkVudih0Y3BfcG9ydD1zdHIocG9ydCkpXG4iLAogICAgInRyeTpcbiIsCiAgICAiICAgIF8sIHYsIGQsIG4gPSBwbGF5X21hdGNodXAoZW52LCBhZ2VudCwgaW1wb3J0bGliLmltcG9ydF9tb2R1bGUoXCJhZ2VudHMuZHVtbXlfYm90LmFnZW50XCIpLlBhcnRpY2lwYW50QWdlbnQoKSwgMSwgdmVyYm9zZT1GYWxzZSlcbiIsCiAgICAiZmluYWxseTpcbiIsCiAgICAiICAgIGVudi5nYW1lLmVuZF90cmFpbmluZygpXG4iLAogICAgIiAgICBoZWFkbGVzcy5raWxsKClcbiIsCiAgICAicHJpbnQoZlwiVGVzdCBPSyA6IDEgcGFydGllIGNvbnRyZSBkdW1teV9ib3QgKHsnZ2FnbsOpZScgaWYgdiBlbHNlICdudWxsZScgaWYgbiBlbHNlICdwZXJkdWUnfSksIFwiXG4iLAogICAgIiAgICAgIGZcIntzdW0odGVtcHMpIC8gbGVuKHRlbXBzKTouMWZ9IG1zIHBhciBjb3VwIGVuIG1veWVubmUsIHttYXgodGVtcHMpOi4xZn0gbXMgYXUgcGlyZVwiKVxuIiwKICAgICJcbiIsCiAgICAic2h1dGlsLmNvcHkoYXJjaGl2ZSwgZlwie1ZPTFVNRV9FUVVJUEV9L3NvdW1pc3Npb25zL3tub219LnppcFwiKSAgICAgICAgICAjIC4uLnB1aXMgc2UgY29waWUgZGFucyBsZSBWb2x1bWVcbiIsCiAgICAiY2F0YWxvZ3VlLCBzY2hlbWEsIHZvbHVtZSA9IFZPTFVNRV9FUVVJUEUuc3BsaXQoXCIvXCIpWzI6NV1cbiIsCiAgICAicHJpbnQoZlwiWmlwIHByw6p0IDoge1ZPTFVNRV9FUVVJUEV9L3NvdW1pc3Npb25zL3tub219LnppcFwiKVxuIiwKICAgICJwcmludChmXCJUw6lsw6ljaGFyZ2V6LWxlIDogQ2F0YWxvZyDigLoge2NhdGFsb2d1ZX0g4oC6IHtzY2hlbWF9IOKAuiB7dm9sdW1lfSDigLogc291bWlzc2lvbnMg4oC6IHtub219LnppcCDigLog4ouuIOKAuiBEb3dubG9hZFwiKVxuIiwKICAgICJwcmludChmXCJQdWlzIGVudm95ZXotbGUgZGFucyBsJ0Fyw6huZSA6IHtVUkxfQVJFTkV9XCIpIgogICBdLAogICAiZXhlY3V0aW9uX2NvdW50IjogbnVsbCwKICAgIm91dHB1dHMiOiBbXQogIH0sCiAgewogICAiY2VsbF90eXBlIjogIm1hcmtkb3duIiwKICAgImlkIjogImNlbGwtMTgiLAogICAibWV0YWRhdGEiOiB7fSwKICAgInNvdXJjZSI6IFsKICAgICIjIyA4LiBFbnZveWVyIHZvdHJlIGFnZW50IGRhbnMgbCdBcsOobmVcbiIsCiAgICAiXG4iLAogICAgIjEuIFTDqWzDqWNoYXJnZXogbGUgemlwIChsZSBjaGVtaW4gZXN0IGFmZmljaMOpIGNpLWRlc3N1cyA6ICoqQ2F0YWxvZyoqIOKAuiBWb2x1bWUgZGUgbCfDqXF1aXBlIOKAuiBgc291bWlzc2lvbnMvYCDigLog4ouuIOKAuiAqKkRvd25sb2FkKiopLlxuIiwKICAgICIyLiBPdXZyZXogKipsJ0Fyw6huZSoqIChsaWVuIGFmZmljaMOpIGNpLWRlc3N1cykgZXQgY29ubmVjdGV6LXZvdXMgYXZlYyB2b3RyZSBjb21wdGUgRGF0YWJyaWNrcy5cbiIsCiAgICAiMy4gT25nbGV0ICoqU291bWV0dHJlKiogOiBnbGlzc2V6IGxlIHppcCBkYW5zIGxhIHpvbmUgKG91IGNsaXF1ZXogcG91ciBsZSBjaG9pc2lyKSwgcHVpcyAqKkVudm95ZXIgbCdhZ2VudCoqLlxuIiwKICAgICI0LiBEYW5zICoqTWVzIHNvdW1pc3Npb25zKiosIGxhIGNvbG9ubmUgKipUZXN0KiogcGFzc2UgZGUgwqsgVGVzdCBlbiBjb3VycyDCuyDDoCAqKsKrIFZhbGlkw6kgwrcgeCBtcyBwYXIgY291cCDCuyoqXG4iLAogICAgIiAgIChvdSDCqyDDiWNoZWMgwrsgOiBzdXJ2b2xlei1sZSBwb3VyIGxpcmUgbCdlcnJldXIpLlxuIiwKICAgICI1LiBPbmdsZXQgKipSZXBsYXlzKiogOiByZWdhcmRleiBsYSBwYXJ0aWUgZGUgdGVzdCwgcHVpcyBsZXMgbWF0Y2hzIGRlIHZvdHJlIMOpcXVpcGUgYXUgbGFkZGVyLlxuIiwKICAgICI2LiBPbmdsZXQgKipDbGFzc2VtZW50KiogOiBsZSBsYWRkZXIgcmVqb3VlIHRvdXRlcyBsZXMgw6lxdWlwZXMgdG91dGVzIGxlcyBoZXVyZXMuXG4iLAogICAgIlxuIiwKICAgICJDaGFxdWUgZW52b2kgcmVtcGxhY2UgbGUgcHLDqWPDqWRlbnQgOiBzb3VtZXR0ZXogdMO0dCwgcHVpcyBzb3V2ZW50LiBBcHLDqHMgbGEgZmVybWV0dXJlIGRlcyBzb3VtaXNzaW9ucyxcbiIsCiAgICAiYydlc3Qgdm90cmUgZGVybmnDqHJlIHNvdW1pc3Npb24gdmFsaWTDqWUgcXVpIGpvdWUgbGUgdG91cm5vaS5cbiIsCiAgICAiXG4iLAogICAgIiMjIFBvdXIgYWxsZXIgcGx1cyBsb2luXG4iLAogICAgIlxuIiwKICAgICItICoqUsOpY29tcGVuc2UqKiA6IGNoYW5nZXogbGVzIHBvaWRzIGRlIGBSRUNPTVBFTlNFYCAoZXguIGBwYWluX2ZhY3RvcmAgcGx1cyBoYXV0IHBvdXIgdW4gYWdlbnQgcGx1cyBwcnVkZW50KS5cbiIsCiAgICAiLSAqKkFkdmVyc2FpcmVzKiogOiBjb21tZW5jZXogY29udHJlIGB0YXJnZXRfYm90YCwgcHVpcyBtb250ZXoganVzcXUnw6AgYGV4cGVydF9tYXN0ZXJfYm90YCA7IGBERVBBUlQgPSBcImRlcm5pZXJcImAgcmVwcmVuZCB2b3RyZSBkZXJuaWVyIG1vZMOobGUuXG4iLAogICAgIi0gKipQbHVzIGxvbmd0ZW1wcyoqIDogMSDDoCA1IG1pbGxpb25zIGRlIGBUSU1FU1RFUFNgIHBvdXIgdW4gdnJhaSBhZ2VudC4gTGUgY2x1c3RlciB0b3VybmUgcGVuZGFudCBxdWUgdm91cyBwcsOpcGFyZXogbGEgc3VpdGUuXG4iLAogICAgIi0gKipPYnNlcnZhdGlvbnMqKiA6IGVucmljaGlzc2V6IGwnZXh0cmFjdGV1ciAoYGFnZW50cy9uZXVyYWxfZXhwZXJ0X2JvdC9mZWF0dXJlX2V4dHJhY3Rvci5weWAgZGFucyBsZSBTREspIGV0IHJlcGFydGV6IGRlIGBcInplcm9cImAgc2kgbGEgdGFpbGxlIGNoYW5nZS4iCiAgIF0KICB9LAogIHsKICAgImNlbGxfdHlwZSI6ICJtYXJrZG93biIsCiAgICJpZCI6ICJjZWxsLTE5IiwKICAgIm1ldGFkYXRhIjoge30sCiAgICJzb3VyY2UiOiBbCiAgICAiIyMg8J+nuSBEw6lwYW5uYWdlIDogwqsgTGUgcG9ydCDigKYgZXN0IGTDqWrDoCB1dGlsaXPDqSDCu1xuIiwKICAgICJcbiIsCiAgICAiVW4gSGVhZGxlc3MgZCd1bmUgY2VsbHVsZSBwcsOpY8OpZGVudGUgdG91cm5lIGVuY29yZS4gQ2V0dGUgY2VsbHVsZSBhcnLDqnRlICoqdm9zKiogSGVhZGxlc3MgKGNldXggZGUgdm90cmUgcGxhZ2VcbiIsCiAgICAiZGUgcG9ydHMpLCBwYXMgY2V1eCBkZSB2b3MgY2/DqXF1aXBpZXJzLiIKICAgXQogIH0sCiAgewogICAiY2VsbF90eXBlIjogImNvZGUiLAogICAiaWQiOiAiY2VsbC0yMCIsCiAgICJtZXRhZGF0YSI6IHt9LAogICAic291cmNlIjogWwogICAgImltcG9ydCBzdWJwcm9jZXNzXG4iLAogICAgInN1YnByb2Nlc3MucnVuKFtcInBraWxsXCIsIFwiLWZcIiwgZlwidGNwOi8vMTI3LjAuMC4xOns0ICsgTUVNQlJFfVwiXSlcbiIsCiAgICAicHJpbnQoXCJIZWFkbGVzcyBkdSBtZW1icmVcIiwgTUVNQlJFLCBcImFycsOqdMOpcy5cIikiCiAgIF0sCiAgICJleGVjdXRpb25fY291bnQiOiBudWxsLAogICAib3V0cHV0cyI6IFtdCiAgfQogXSwKICJtZXRhZGF0YSI6IHsKICAia2VybmVsc3BlYyI6IHsKICAgImRpc3BsYXlfbmFtZSI6ICJQeXRob24gMyIsCiAgICJsYW5ndWFnZSI6ICJweXRob24iLAogICAibmFtZSI6ICJweXRob24zIgogIH0sCiAgImxhbmd1YWdlX2luZm8iOiB7CiAgICJuYW1lIjogInB5dGhvbiIKICB9CiB9Cn0K" download="automathon_demarrage.ipynb">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+        Télécharger le notebook
+      </a>
+      <a class="btn btn-ghost" href="#premier-essai">Premier essai en 20 min</a>
+    </div>
+    <div class="facts">
+      <div class="fact"><span class="fact-label">Quand</span><span class="fact-value">20 → 21 nov. 2026</span><span class="fact-sub">Vendredi 19 h → samedi 20 h</span></div>
+      <div class="fact"><span class="fact-label">Où</span><span class="fact-value">CentraleSupélec</span><span class="fact-sub">Campus de Gif-sur-Yvette</span></div>
+      <div class="fact"><span class="fact-label">Entraînement</span><span class="fact-value">Databricks</span><span class="fact-sub">Un cluster et un Volume par équipe</span></div>
+      <div class="fact"><span class="fact-label">Tournoi</span><span class="fact-value">L’Arène</span><span class="fact-sub">Application Databricks des organisateurs</span></div>
+    </div>
+  </div>
+</header>
+<div class="band" aria-hidden="true"></div>
+
+<div class="wrap layout">
+  <nav class="toc" aria-label="Étapes du guide">
+    <span class="toc-title">Le parcours</span>
+    <a href="#principe"><span>··</span><span>Le principe</span></a>
+    <a href="#prerequis"><span>··</span><span>Ce qu’il vous faut</span></a>
+    <a href="#premier-essai"><span>··</span><span>Premier essai</span></a>
+    <a href="#etape-1"><span>01</span><span>Installer le jeu</span></a>
+    <a href="#etape-2"><span>02</span><span>Écrire un agent</span></a>
+    <a href="#etape-3"><span>03</span><span>Ouvrir Databricks</span></a>
+    <a href="#etape-4"><span>04</span><span>Lancer le notebook</span></a>
+    <a href="#etape-5"><span>05</span><span>Entraîner</span></a>
+    <a href="#etape-6"><span>06</span><span>Préparer le zip</span></a>
+    <a href="#etape-7"><span>07</span><span>Soumettre</span></a>
+    <a href="#etape-8"><span>08</span><span>L’Arène et le tournoi</span></a>
+    <a href="#regles"><span>··</span><span>Règles</span></a>
+    <a href="#plus-loin"><span>··</span><span>Aller plus loin</span></a>
+    <a href="#depannage"><span>··</span><span>Dépannage</span></a>
+  </nav>
+
+  <main>
+
+    <section id="principe">
+      <span class="label">Le principe</span>
+      <h2>Un duel de vaisseaux, piloté par votre code</h2>
+      <p>Deux vaisseaux s’affrontent dans une arène parsemée de murs, avec une mitrailleuse, un missile, un bouclier et un dash. 60 fois par seconde, votre agent Python reçoit l’état du jeu (<code>GameState</code>) et renvoie une action (<code>AIAction</code>). Une partie dure au plus 60 secondes. Le premier vaisseau à 0 PV a perdu.</p>
+      <div class="flow" role="list" aria-label="Le parcours de votre agent">
+        <div class="node pc" role="listitem"><span class="where">Votre PC</span><b>Jeu et Headless</b><small>Écrire et tester l’agent, le regarder jouer</small></div>
+        <span class="arrow" aria-hidden="true">→</span>
+        <div class="node" role="listitem"><span class="where">Databricks</span><b>Notebook + cluster d’équipe</b><small>Entraîner un réseau avec PPO, des milliers de parties</small></div>
+        <span class="arrow" aria-hidden="true">→</span>
+        <div class="node" role="listitem"><span class="where">L’Arène</span><b>Envoyer un zip</b><small>Test automatique, ladder toutes les heures, vos replays</small></div>
+        <span class="arrow" aria-hidden="true">→</span>
+        <div class="node" role="listitem"><span class="where">Tournoi</span><b>Tableau final</b><small>Les 16 meilleures équipes du ladder, sur grand écran</small></div>
+      </div>
+      <p class="muted">L’apprentissage par renforcement n’est pas obligatoire : un agent écrit à la main (des règles bien pensées) peut aller très loin. Le mieux est souvent de combiner les deux.</p>
+    </section>
+
+    <section id="prerequis">
+      <span class="label">Avant de commencer</span>
+      <h2>Ce qu’il vous faut</h2>
+      <div class="sheet">
+        <h3>Fourni par les organisateurs</h3>
+        <dl>
+          <dt>Dossier du jeu</dt><dd>Pour votre OS : <code>Automathon_v0.4_Windows.zip</code>, <code>MacOS-arm64.zip</code>, <code>MacOS-x64.zip</code> ou la version Linux. Il contient le jeu, <code>Headless/</code> et <code>PythonAI/</code>.</dd>
+          <dt>Identifiant d’équipe</dt><dd>Par exemple <code>equipe_07</code> : il sert partout (notebook, Volume, dossier).</dd>
+          <dt>Workspace Databricks</dt><dd><a data-cfg-href="workspace" href="#" target="_blank" rel="noopener"><span data-cfg="workspace">https://votre-workspace.cloud.databricks.com</span></a>, avec le compte de l’adresse que vous avez donnée.</dd>
+          <dt>Dossier d’équipe</dt><dd><code><span data-cfg="team_folders">/Workspace/Groups</span>/automathon-&lt;equipe&gt;</code> : lien direct envoyé à l’équipe.</dd>
+          <dt>Cluster d’équipe</dt><dd><code><span data-cfg="cluster">automathon-&lt;equipe&gt;</span></code>, partagé par l’équipe.</dd>
+          <dt>Volume d’équipe</dt><dd><code><span data-cfg="volumes">/Volumes/automathon/equipes</span>/&lt;equipe&gt;</code> : vos modèles et vos zips, conservés.</dd>
+          <dt>L’Arène</dt><dd><a data-cfg-href="arene" href="#" target="_blank" rel="noopener"><span data-cfg="arene">adresse communiquée au lancement</span></a></dd>
+        </dl>
+      </div>
+      <p>Donnez aux organisateurs le nom de votre équipe et l’adresse e-mail de chaque membre : elles ouvrent l’accès au workspace et à l’Arène. Pour le premier essai, un navigateur suffit. Le jeu et <a href="https://docs.astral.sh/uv/getting-started/installation/" target="_blank" rel="noopener">uv</a> sur votre PC servent ensuite à regarder et déboguer votre agent (étapes 1 et 2).</p>
+    </section>
+
+    <section id="premier-essai">
+      <span class="label">Premier essai · 20 minutes</span>
+      <h2>Votre premier agent dans l’Arène</h2>
+      <p>Faites ce parcours une fois sans rien modifier : vous aurez un agent entraîné, validé par l’Arène, et vous connaîtrez tous les outils. Ensuite, améliorez-le.</p>
+      <ol class="clicks">
+        <li><span><strong>Importez le notebook</strong> dans le dossier de l’équipe. <a href="#etape-3">Étape 3</a></span></li>
+        <li><span><strong>Connectez le cluster de l’équipe</strong> : 5 à 7 minutes s’il était arrêté.</span></li>
+        <li><span><strong>Exécutez la section 1</strong>, puis la première cellule de la section 2, et remplissez les champs <strong>Équipe</strong> et <strong>Membre</strong> apparus en haut. <a href="#etape-4">Étape 4</a></span></li>
+        <li><span><strong>Exécutez le reste</strong>, cellule par cellule (environ 5 minutes). La section 7 doit afficher <code>Test OK</code> puis <code>Zip prêt</code>.</span></li>
+        <li><span><strong>Téléchargez le zip</strong> depuis <strong>Catalog</strong>. <a href="#etape-6">Étape 6</a></span></li>
+        <li><span><strong>Envoyez-le dans l’Arène</strong> : la colonne Test passe à <code>Validé · x ms par coup</code>, et la partie de test apparaît dans Replays. <a href="#etape-7">Étape 7</a></span></li>
+      </ol>
+    </section>
+
+    <section id="etape-1">
+      <span class="label">Étape 1 <span class="where">Votre PC</span></span>
+      <h2>Installer le jeu et voir un bot jouer</h2>
+      <p class="muted">Facultatif pour le premier essai : utile ensuite pour regarder votre agent jouer et le déboguer.</p>
+      <ol class="clicks">
+        <li><span>Décompressez le dossier du jeu. Sous Windows, près de la racine du disque (par exemple <code>C:\Automathon</code>) : un chemin trop long fait échouer l’installation.</span></li>
+        <li><span>Installez l’environnement Python, une seule fois, depuis <code>PythonAI/</code> : <code>uv sync</code>.</span></li>
+        <li><span>Lancez un bot et le jeu graphique (commande ci-dessous).</span></li>
+        <li><span>Dans le menu du jeu : cliquez sur <strong>PLAYER</strong> au-dessus d’un vaisseau pour le passer en <strong>AI</strong>, saisissez <code>5555</code> dans <strong>AI TCP PORT</strong> puis <kbd>Entrée</kbd> (« CONNECTION SUCCESSFUL ! »), puis <strong>PLAY</strong>. L’autre vaisseau peut rester en PLAYER : vous jouez au clavier contre le bot.</span></li>
+      </ol>
+      <div class="code">
+        <div class="code-bar"><span class="code-name">terminal · PythonAI/</span><button class="copy" type="button">Copier</button></div>
+<pre>uv sync
+uv run python agents/run_my_agent.py expert_master_bot --launch-game</pre>
+      </div>
+      <p class="muted">Pour un duel IA contre IA, lancez un second agent dans un autre terminal avec <code>--port 5556</code> et passez l’autre vaisseau en AI sur <code>5556</code>. Sur macOS, si « Mac.app est endommagé » : <code>xattr -dr com.apple.quarantine Mac.app Headless/Headless</code>. Sur un Mac Intel, torch n’existe plus : le jeu et les agents à règles marchent, l’entraînement se fait sur Databricks.</p>
+    </section>
+
+    <section id="etape-2">
+      <span class="label">Étape 2 <span class="where">Votre PC</span></span>
+      <h2>Écrire votre agent</h2>
+      <p>Un agent est un dossier <code>PythonAI/agents/&lt;equipe&gt;/</code> qui contient <code>agent.py</code>, avec une classe <code>ParticipantAgent</code> et une méthode <code>get_action</code>. Le notebook en crée un pour vous (un réseau de neurones) : cette étape sert à écrire le vôtre, à la main. Exemple qui fonce sur l’ennemi en tirant :</p>
+      <div class="code">
+        <div class="code-bar"><span class="code-name">agents/mon_equipe/agent.py</span><button class="copy" type="button">Copier</button></div>
+<pre><span class="k">from</span> bridge.datatypes <span class="k">import</span> GameState, AIAction, Vector2Int
+
+
+<span class="k">class</span> ParticipantAgent:
+    <span class="k">def</span> __init__(self):
+        <span class="k">pass</span>
+
+    <span class="k">def</span> get_action(self, state: GameState) -&gt; AIAction:
+        me, enemy = state.SelfTank, state.EnemyTank
+        <span class="k">if</span> me <span class="k">is None or</span> enemy <span class="k">is None</span>:
+            <span class="k">return</span> AIAction()
+        dx = enemy.Position.X - me.Position.X
+        dy = enemy.Position.Y - me.Position.Y
+        <span class="k">return</span> AIAction(
+            MovingDirection=Vector2Int(X=dx, Y=dy),   <span class="c"># seul l’angle compte</span>
+            AimingDirection=Vector2Int(X=dx, Y=dy),
+            MachineGun=<span class="k">True</span>,
+        )</pre>
+      </div>
+      <div class="table">
+        <table>
+          <thead><tr><th>Champ de GameState</th><th>Contenu</th></tr></thead>
+          <tbody>
+            <tr><td><code>SelfTank</code>, <code>EnemyTank</code></td><td>Position, vitesse (unités/s), PV (1 000 au départ), recharges en frames (<code>MachineGunCooldownFramesLeft</code>… 0 = prêt). <code>None</code> si détruit.</td></tr>
+            <tr><td><code>BulletStates</code>, <code>MissileStates</code></td><td>Projectiles en vol : position, vitesse, rayon. Les vôtres et ceux de l’ennemi.</td></tr>
+            <tr><td><code>WallStates</code>, <code>ShieldStates</code></td><td>Rectangles (centre, taille, rotation en milliradians). Les murs changent à chaque partie et arrêtent les tirs.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="muted">Repères mesurés : arène d’environ ±13 300 en X et ±7 300 en Y, vaisseaux à environ 7 000 unités/s, balles à 17 000, missiles à 9 000. La mitrailleuse tire des rafales de 7 balles de 100 PV, puis recharge 2 s. Le bouclier apparaît 2 000 unités devant votre visée et reste sur place.</p>
+      <div class="code">
+        <div class="code-bar"><span class="code-name">terminal · tester votre agent</span><button class="copy" type="button">Copier</button></div>
+<pre>uv run python evaluation/run_matchup.py mon_equipe rush_bot --games 11   <span class="c"># 11 parties sans affichage</span>
+uv run python agents/run_my_agent.py mon_equipe --launch-game            <span class="c"># en visuel</span></pre>
+      </div>
+      <p>Les bots d’exemple vont de <code>dummy_bot</code> (immobile) à <code>expert_master_bot</code> (le plus fort). Battez-les un par un.</p>
+    </section>
+
+    <section id="etape-3">
+      <span class="label">Étape 3 <span class="where">Databricks</span></span>
+      <h2>Ouvrir le notebook sur le cluster de l’équipe</h2>
+      <ol class="clicks">
+        <li><span>Connectez-vous au workspace avec l’adresse donnée aux organisateurs, puis ouvrez le <strong>lien direct vers le dossier de votre équipe</strong>.</span></li>
+        <li><span>Téléchargez le notebook (bouton en haut de cette page). Dans le dossier d’équipe : menu <strong>⋮</strong> en haut à droite <span class="path"><span class="sep">›</span>Import</span>, déposez le fichier <code>.ipynb</code>, puis <strong>Import</strong>. Le notebook <code>automathon_demarrage</code> apparaît dans le dossier.</span></li>
+        <li><span>Ouvrez-le, cliquez sur <strong>Connect</strong> en haut à droite et choisissez le cluster <code data-cfg="cluster">automathon-&lt;equipe&gt;</code>. S’il était arrêté, il démarre : comptez 5 à 7 minutes, il est prêt quand sa pastille passe au vert.</span></li>
+      </ol>
+      <div class="note warn">
+        <span class="note-title">Pas dans votre dossier personnel</span>
+        <p>Le cluster d’équipe travaille avec les droits de l’équipe : il ne peut pas lire <span class="path">Workspace<span class="sep">›</span>Users<span class="sep">›</span>votre adresse</span>. Gardez le notebook dans le dossier de l’équipe. Chaque membre peut y avoir sa propre copie.</p>
+      </div>
+    </section>
+
+    <section id="etape-4">
+      <span class="label">Étape 4 <span class="where">Databricks</span></span>
+      <h2>Lancer le notebook</h2>
+      <p>Une cellule s’exécute avec ▶ à sa gauche, ou <kbd>Maj</kbd> + <kbd>Entrée</kbd>, qui passe aussi à la suivante. La première fois :</p>
+      <ol class="clicks">
+        <li><span>Exécutez les deux cellules de la <strong>section 1</strong>. Le message « Note: you may need to restart the kernel » est normal : la cellule suivante redémarre Python.</span></li>
+        <li><span>Exécutez la première cellule de la <strong>section 2</strong> : deux champs apparaissent en haut du notebook. Saisissez <strong>Équipe</strong> (votre identifiant, ex. <code>equipe_07</code>) et <strong>Membre</strong> (1 à 4, un numéro différent par membre : il vous réserve des ports sur le cluster partagé).</span></li>
+        <li><span>Continuez cellule par cellule. Les champs restent remplis : les fois suivantes, <strong>Run all</strong> en haut du notebook exécute tout d’un coup.</span></li>
+      </ol>
+      <div class="table">
+        <table>
+          <thead><tr><th>Section</th><th>Ce qu’elle fait</th><th>Ce que vous devez voir</th></tr></thead>
+          <tbody>
+            <tr><td>1. Installer</td><td>torch, stable-baselines3… aux versions de l’Arène, puis redémarre Python.</td><td>≈ 30 s, pas d’erreur</td></tr>
+            <tr><td>2. Paramètres</td><td>Lit les deux champs, vérifie le Volume de l’équipe.</td><td><code>Équipe equipe_07, membre 1. Volume : …</code></td></tr>
+            <tr><td>3. Le jeu</td><td>Installe le Headless et le SDK sur le cluster (version ARM ou x86, choisie toute seule) et joue une partie au hasard.</td><td><code>OK : processeur …, 16 cœurs</code></td></tr>
+            <tr><td>4. Votre agent</td><td>Écrit <code>agent.py</code> et <code>feature_extractor.py</code> : un réseau de neurones qui lit 82 nombres et en sort 8.</td><td><code>Agent : …</code></td></tr>
+            <tr><td>5. Entraîner</td><td>PPO, plusieurs parties en parallèle. Le modèle va dans <code>modeles/</code> du Volume.</td><td>Des tableaux avec <code>ep_rew_mean</code>, puis <code>Entraînement terminé</code> (≈ 2 min)</td></tr>
+            <tr><td>6. Tester</td><td>7 parties contre 4 bots, de <code>target_bot</code> à <code>expert_master_bot</code>.</td><td><code>contre target_bot  2 V / 5 N / 0 D</code>… (≈ 30 s)</td></tr>
+            <tr><td>7. Le zip</td><td>Crée le zip pour l’Arène et le vérifie comme elle : une partie contre <code>dummy_bot</code>.</td><td><code>Test OK … ms par coup</code>, puis <code>Zip prêt</code> et le chemin du zip</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="muted">Un premier agent gagne parfois contre les bots faciles et perd contre <code>expert_master_bot</code> : c’est normal, c’est votre point de départ.</p>
+      <div class="note">
+        <span class="note-title">Après une pause</span>
+        <p>Le cluster s’arrête après une heure d’inactivité : tout ce qui est sur son disque local disparaît, le Volume de l’équipe est conservé. Relancez les sections 1 à 4, puis reprenez votre dernier modèle avec <code>DEPART = "dernier"</code>.</p>
+      </div>
+    </section>
+
+    <section id="etape-5">
+      <span class="label">Étape 5 <span class="where">Databricks</span></span>
+      <h2>Entraîner un agent par renforcement</h2>
+      <p>Par défaut, le notebook part de <code>bc_model.zip</code>, un réseau déjà entraîné à imiter <code>expert_master_bot</code>, et l’améliore avec PPO contre <code>rush_bot</code>. Pour le premier essai, ne changez rien. Ensuite, tous vos essais passent par la cellule de réglages :</p>
+      <div class="code">
+        <div class="code-bar"><span class="code-name">notebook · section 5 · réglages</span><button class="copy" type="button">Copier</button></div>
+<pre>DEPART = <span class="s">"bc"</span>          <span class="c"># "bc" : imite déjà expert_master_bot · "dernier" : votre dernier modèle · "zero" : réseau neuf</span>
+ADVERSAIRE = <span class="s">"rush_bot"</span>  <span class="c"># target_bot, random_shooter_bot, rush_bot, kiter_bot, smart_dash_bot, expert_master_bot...</span>
+TIMESTEPS = <span class="s">200_000</span>    <span class="c"># frames de jeu cumulées sur toutes les parties (200 000 : environ 2 min)</span>
+NB_ENVS = <span class="s">4</span>            <span class="c"># parties en parallèle. Le cluster est partagé : à quatre, 4 chacun au plus</span>
+RECOMPENSE = dict(time_penalty=<span class="s">0.1</span>, damage_dealt_coef=<span class="s">1.0</span>, pain_factor=<span class="s">0.1</span>,
+                  win_bonus=<span class="s">1000.0</span>, loss_penalty=<span class="s">1000.0</span>, draw_penalty=<span class="s">1000.0</span>, oob_penalty=<span class="s">1000.0</span>)
+PPO_PARAMS = dict(learning_rate=<span class="s">3e-4</span>, n_steps=<span class="s">2048</span>, batch_size=<span class="s">1024</span>, gamma=<span class="s">0.99</span>, ent_coef=<span class="s">0.0</span>)</pre>
+      </div>
+      <div class="table">
+        <table>
+          <thead><tr><th>Réglage</th><th>Effet</th></tr></thead>
+          <tbody>
+            <tr><td><code>TIMESTEPS</code></td><td>Durée de l’entraînement. Un vrai agent demande 1 à 5 millions de frames : lancez-le pendant que vous travaillez sur autre chose.</td></tr>
+            <tr><td><code>ADVERSAIRE</code></td><td>Le bot contre lequel il s’entraîne. Montez la difficulté au fil des essais, avec <code>DEPART = "dernier"</code>.</td></tr>
+            <tr><td><code>batch_size</code></td><td>Le levier de vitesse n°1 : sur nos tests, une grande valeur entraîne bien plus vite que 64 et généralise mieux.</td></tr>
+            <tr><td><code>NB_ENVS</code></td><td>Parties jouées en parallèle. La somme pour l’équipe ne doit pas dépasser le nombre de cœurs du cluster (affiché en section 3).</td></tr>
+            <tr><td><code>RECOMPENSE</code></td><td>Ce que l’agent cherche à maximiser : dégâts infligés, subis, victoire… (<code>core/env/reward_shaping.py</code>).</td></tr>
+            <tr><td><code>learning_rate</code>, <code>ent_coef</code></td><td>Vitesse d’apprentissage, exploration.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Suivez <code>ep_rew_mean</code> dans la sortie : si elle monte, l’agent progresse. Toutes les 50 000 frames, une copie part dans <code>checkpoints/</code> du Volume ; le modèle final va dans <code>modeles/</code>.</p>
+      <div class="note">
+        <span class="note-title">Changez une chose à la fois</span>
+        <p>Comparez chaque nouveau modèle à l’ancien sur au moins 21 parties : avec moins, le hasard décide.</p>
+      </div>
+    </section>
+
+    <section id="etape-6">
+      <span class="label">Étape 6 <span class="where">Databricks</span></span>
+      <h2>Préparer le zip de soumission</h2>
+      <p>La section 7 du notebook crée un zip avec <code>agent.py</code>, <code>feature_extractor.py</code> et <code>model.zip</code>, puis le <strong>vérifie comme l’Arène</strong> : décompressé à part, chargé, une partie contre <code>dummy_bot</code>, temps de réponse mesuré. Le zip est enregistré dans <code>soumissions/</code> du Volume. Téléchargez-le :</p>
+      <ol class="clicks">
+        <li><span>Dans la barre de gauche, ouvrez <strong>Catalog</strong>, puis suivez le chemin affiché par le notebook : catalogue <span class="sep">›</span> schéma <span class="sep">›</span> Volume de l’équipe <span class="sep">›</span> <code>soumissions</code>.</span></li>
+        <li><span>Sur la ligne du zip, menu <strong>⋮</strong> <span class="path"><span class="sep">›</span>Download</span> : il arrive dans les téléchargements de votre PC.</span></li>
+      </ol>
+      <div class="table">
+        <table>
+          <thead><tr><th>Règle du zip</th><th>Détail</th></tr></thead>
+          <tbody>
+            <tr><td><code>agent.py</code></td><td>À la racine du zip, ou dans un seul dossier, avec une classe nommée exactement <code>ParticipantAgent</code>.</td></tr>
+            <tr><td>Fichiers chargés</td><td>Tout ce que l’agent charge est dans le zip, avec un chemin relatif : <code>Path(__file__).parent / "model.zip"</code>. L’Arène ne connaît pas vos fichiers du Volume.</td></tr>
+            <tr><td>Extracteur</td><td>Si vous l’avez modifié, mettez-le dans le zip et importez-le avec <code>from .feature_extractor import extract_features</code> (c’est ce que fait le notebook).</td></tr>
+            <tr><td>Taille</td><td>100 Mo au plus une fois décompressé.</td></tr>
+            <tr><td>Bibliothèques</td><td>Seulement numpy, torch, stable-baselines3, gymnasium, pydantic et la bibliothèque standard de Python. Un autre import fera échouer votre agent dans l’Arène.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="muted">Agent écrit à la main sur votre PC ? Zippez le contenu de son dossier (ou le dossier lui-même) et testez-le d’abord avec <code>run_matchup.py</code>.</p>
+    </section>
+
+    <section id="etape-7">
+      <span class="label">Étape 7 <span class="where">L’Arène</span></span>
+      <h2>Soumettre votre agent</h2>
+      <ol class="clicks">
+        <li><span>Ouvrez <a data-cfg-href="arene" href="#" target="_blank" rel="noopener">l’Arène</a> et connectez-vous avec votre compte Databricks (la même adresse). Votre équipe s’affiche en haut à droite.</span></li>
+        <li><span>Onglet <strong>Soumettre</strong> : glissez le zip dans la zone (ou cliquez pour le choisir), puis <strong>Envoyer l’agent</strong>. Le message « Reçu pour … Test en cours contre dummy_bot… » confirme l’envoi.</span></li>
+        <li><span>L’Arène analyse le zip (voir Fair-play dans les règles), puis joue une partie contre <code>dummy_bot</code>. Dans le tableau <strong>Mes soumissions</strong>, la colonne <strong>Test</strong> passe de « Test en cours » à <strong>« Validé · x ms par coup »</strong> après quelques secondes. « Échec » : survolez-le pour lire l’erreur.</span></li>
+        <li><span>Onglet <strong>Replays</strong> : regardez la partie de test de votre agent.</span></li>
+      </ol>
+      <p>Chaque nouvelle soumission remplace la précédente : soumettez tôt, puis souvent. Seule une soumission validée entre au ladder.</p>
+      <div class="note warn">
+        <span class="note-title">Fermeture des soumissions</span>
+        <p>Samedi à 16 h (horaire à confirmer). Ensuite, l’onglet Soumettre est fermé : c’est votre dernière soumission validée qui joue le tournoi final.</p>
+      </div>
+    </section>
+
+    <section id="etape-8">
+      <span class="label">Étape 8 <span class="where">L’Arène</span></span>
+      <h2>Ladder, replays et classement</h2>
+      <div class="tabs">
+        <div><h3>Ladder <span>toutes les heures</span></h3><p>La dernière soumission validée de chaque équipe affronte toutes les autres, plus quelques bots de référence (5 parties par confrontation). Vous ne lancez pas de match vous-mêmes : pour vous tester, jouez contre les bots dans le notebook ou sur votre PC.</p></div>
+        <div><h3>Replays <span>onglet</span></h3><p>Les matchs de votre équipe au dernier ladder et le test de votre soumission, à vitesse 1×, 2× ou 4×. Vous ne voyez pas les matchs des autres équipes. Idéal pour comprendre pourquoi vous perdez.</p></div>
+        <div><h3>Classement <span>onglet</span></h3><p>Le classement provisoire du dernier ladder, mis à jour toutes les heures. Les bots y figurent comme repères mais ne sont pas classés.</p></div>
+        <div><h3>Tournoi final <span>samedi</span></h3><p>Après la fermeture des soumissions : un tour de classement entre équipes, puis un tableau à élimination directe des 16 meilleures, révélé sur grand écran.</p></div>
+        <div><h3>Prix et pronostics <span>onglet Prix</span></h3><p>Quand le show annonce les 4 demi-finalistes, ils présentent leur approche sur scène. Votez ensuite pour le prix de l’explicabilité et de l’élégance (une voix par participant, pas pour votre équipe), et pronostiquez le champion parmi les 4, jusqu’au lancement de la première demi-finale.</p></div>
+      </div>
+    </section>
+
+    <section id="regles">
+      <span class="label">Règles</span>
+      <h2>Comment un match est joué</h2>
+      <div class="table">
+        <table>
+          <thead><tr><th>Règle</th><th>Dans l’Arène</th></tr></thead>
+          <tbody>
+            <tr><td>Côtés</td><td>Les agents changent de côté à chaque partie.</td></tr>
+            <tr><td>Fin de partie</td><td>Un vaisseau à 0 PV, ou 60 s écoulées. Au temps, le vaisseau qui a le plus de PV gagne. À PV égaux, partie nulle.</td></tr>
+            <tr><td>Erreurs</td><td>Si <code>get_action</code> lève une exception, votre vaisseau reçoit une action vide pour cette frame. Au-delà de 50 exceptions dans une partie, vous la perdez par forfait.</td></tr>
+            <tr><td>Temps de réponse</td><td>Mesuré et affiché. Gardez <code>get_action</code> rapide (quelques millisecondes) : limite officielle à confirmer.</td></tr>
+            <tr><td>Ladder</td><td>Tous contre tous toutes les heures : victoire 3 pts, nul 1 pt. Départage : différence de parties, puis parties gagnées.</td></tr>
+            <tr><td>Tournoi final</td><td>Tour de classement entre équipes, puis tableau à élimination directe des 16 premières (1 et 2 ne peuvent se rencontrer qu’en finale). Matchs en 11 parties ; en cas d’égalité, jusqu’à 3 parties de mort subite, puis la meilleure tête de série passe.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note">
+        <span class="note-title">Fair-play</span>
+        <p>Votre agent ne doit lire ou modifier que ce qu’on lui donne (<code>GameState</code>). Chaque soumission est analysée automatiquement à l’envoi (accès au système, au réseau, aux fichiers ou au code des autres équipes, manipulation du match ou de l’adversaire). Les organisateurs relisent les agents signalés et ceux de tous les finalistes. Un agent qui triche est retiré du classement et du tournoi.</p>
+      </div>
+    </section>
+
+    <section id="plus-loin">
+      <span class="label">Aller plus loin</span>
+      <h2>Rendre votre agent meilleur</h2>
+      <div class="tabs">
+        <div><h3>Viser devant</h3><p>Une balle met du temps à arriver : visez là où l’ennemi sera, pas là où il est (position + vitesse × temps de vol).</p></div>
+        <div><h3>Ne pas tirer dans les murs</h3><p>Les murs arrêtent les tirs. Vérifiez que la ligne de tir est libre avant de tirer, et cherchez une position qui voit l’ennemi.</p></div>
+        <div><h3>Esquiver</h3><p>Calculez si une balle ou un missile va vous toucher dans les prochaines frames, et dashez perpendiculairement.</p></div>
+        <div><h3>Le piège de l’imitation</h3><p>Un bot ne tire que sur une petite fraction des frames. Un réseau qui l’imite avec une erreur moyenne apprend à ne presque jamais tirer. Pondérez ces actions rares, ou laissez des règles gérer le tir et le réseau gérer le déplacement.</p></div>
+        <div><h3>Mieux voir le jeu</h3><p>Les 82 features ne disent pas si la ligne de tir est libre. Ajoutez-en (<code>feature_extractor.py</code>) et repartez d’un réseau neuf (<code>DEPART = "zero"</code>) si la taille change.</p></div>
+        <div><h3>Récompense</h3><p>L’agent optimise exactement ce que vous récompensez : précision, distance, usage du bouclier… (<code>core/env/reward_shaping.py</code>).</p></div>
+      </div>
+      <div class="table">
+        <table>
+          <thead><tr><th>Sur Databricks</th><th>À retenir</th></tr></thead>
+          <tbody>
+            <tr><td>Disque local</td><td>Effacé au redémarrage du cluster : le notebook y met le jeu, le SDK et votre agent, et les recrée à chaque lancement.</td></tr>
+            <tr><td>Volume d’équipe</td><td>Conservé et partagé par l’équipe : <code>modeles/</code>, <code>checkpoints/</code>, <code>soumissions/</code>. Un zip s’y écrit en local puis s’y copie, jamais directement.</td></tr>
+            <tr><td>Cluster partagé</td><td>Additionnez les <code>NB_ENVS</code> de l’équipe : au-delà du nombre de cœurs, tout ralentit et des parties expirent.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="depannage">
+      <span class="label">Dépannage</span>
+      <h2>Quand quelque chose coince</h2>
+      <div>
+        <details><summary>« Renseignez le champ « 1. Équipe » en haut du notebook »</summary><div><p>Les champs étaient vides quand la section 2 s’est exécutée (souvent après un <strong>Run all</strong> la première fois). Remplissez <strong>Équipe</strong> et <strong>Membre</strong> en haut du notebook, puis relancez à partir de la section 2.</p></div></details>
+        <details><summary>Le cluster de l’équipe n’apparaît pas dans <strong>Connect</strong></summary><div><p>Votre compte n’est pas encore dans l’équipe, ou le notebook n’est pas dans le dossier de l’équipe. Vérifiez le dossier, puis prévenez un organisateur.</p></div></details>
+        <details><summary>L’Arène affiche « Vous n’êtes inscrit dans aucune équipe »</summary><div><p>Votre adresse n’est pas dans la liste des équipes, ou vous êtes connecté avec un autre compte. Demandez aux organisateurs de l’ajouter.</p></div></details>
+        <details><summary>« Le port … est déjà utilisé »</summary><div><p>Un Headless d’une cellule précédente tourne encore. Exécutez la dernière cellule du notebook : elle arrête uniquement vos Headless. Vérifiez aussi que deux membres n’ont pas choisi le même numéro. Sur PC : <code>pkill -f Headless</code> (macOS, Linux) ou <code>taskkill /F /IM Headless.exe</code> (Windows).</p></div></details>
+        <details><summary>« Le Headless (port …) n’écoute pas après … s »</summary><div><p>Le cluster est surchargé, souvent parce que trop de parties tournent dans l’équipe. Réduisez <code>NB_ENVS</code>, ou ajoutez <code>os.environ["AUTOMATHON_STARTUP_WAIT"] = "60"</code>.</p></div></details>
+        <details><summary>« … introuvable dans /Volumes/… : prévenez un organisateur »</summary><div><p>Le simulateur n’est pas dans le Volume partagé, ou vous n’y avez pas accès. Prévenez un organisateur.</p></div></details>
+        <details><summary>« Volume introuvable » ou <code>PERMISSION_DENIED</code></summary><div><p>Vérifiez l’identifiant saisi dans <strong>Équipe</strong>, et que le notebook est dans le dossier de l’équipe et attaché au cluster de l’équipe.</p></div></details>
+        <details><summary><code>ModuleNotFoundError</code> ou variable inconnue (<code>EQUIPE</code>, <code>SDK</code>…)</summary><div><p>Python a redémarré (après la section 1, une pause ou un détachement). Relancez les sections 1 à 4.</p></div></details>
+        <details><summary>Soumission refusée : « no agent.py in the zip » ou « no ParticipantAgent class »</summary><div><p>Le zip doit contenir <code>agent.py</code>, à la racine ou dans un seul dossier, avec une classe nommée exactement <code>ParticipantAgent</code>.</p></div></details>
+        <details><summary>Test « Échec » dans l’Arène (« failed to run », « No module named … »)</summary><div><p>Votre agent charge un fichier absent du zip, utilise un chemin absolu, ou importe une bibliothèque non installée. Chargez les fichiers avec <code>Path(__file__).parent / "..."</code> et vérifiez le zip avec la section 7 du notebook avant de l’envoyer.</p></div></details>
+        <details><summary>L’agent ne progresse pas</summary><div><p>Regardez <code>ep_rew_mean</code>. Si elle stagne, entraînez plus longtemps, commencez contre un adversaire plus facile (<code>ADVERSAIRE = "target_bot"</code>), ou regardez un replay dans l’Arène pour voir ce qu’il fait vraiment.</p></div></details>
+      </div>
+      <p>Un blocage qui résiste ? Les mentors Databricks et Automatants sont là pendant les 24 h : venez avec le message d’erreur complet.</p>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="wrap">
+    <span><b>RLCS Automathon</b> · Automatants, CentraleSupélec</span>
+    <span>En partenariat avec Databricks, HubIA et CStudio</span>
+  </div>
+</footer>
+
+<script>
+// Organizers: edit these values once; every matching spot in the page updates.
+const CONFIG = {
+  workspace: "https://votre-workspace.cloud.databricks.com",
+  arene: "https://automathon-arena-7474646720384619.aws.databricksapps.com",
+  cluster: "automathon-<equipe>",
+  volumes: "/Volumes/automathon/equipes",
+  team_folders: "/Workspace/Groups",
+};
+
+document.querySelectorAll("[data-cfg]").forEach((el) => { if (el.dataset.cfg in CONFIG) el.textContent = CONFIG[el.dataset.cfg]; });
+document.querySelectorAll("[data-cfg-href]").forEach((el) => { el.href = CONFIG[el.dataset.cfgHref]; });
+
+document.querySelectorAll(".copy").forEach((button) => {
+  button.addEventListener("click", async () => {
+    const pre = button.closest(".code").querySelector("pre");
+    try {
+      await navigator.clipboard.writeText(pre.innerText);
+      button.textContent = "Copié";
+    } catch (err) {
+      const range = document.createRange();
+      range.selectNodeContents(pre);
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+      button.textContent = "Sélectionné";
+    }
+    setTimeout(() => { button.textContent = "Copier"; }, 1600);
+  });
+});
+
+const links = [...document.querySelectorAll(".toc a")];
+if ("IntersectionObserver" in window) {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      links.forEach((a) => a.classList.toggle("is-active", a.getAttribute("href") === "#" + entry.target.id));
+    });
+  }, { rootMargin: "-20% 0px -70% 0px" });
+  links.forEach((a) => { const s = document.querySelector(a.getAttribute("href")); if (s) observer.observe(s); });
+}
+</script>
+</body>
+</html>
