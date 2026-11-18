@@ -62,4 +62,15 @@ mergeInto(LibraryManager.library, {
     try { if (entry.socket) entry.socket.close(); } catch (e) { }
     delete Module.automathonSockets[id];
   },
+
+  // Events of the game for the page that hosts it (Game/Features/Web/WebBridge.cs):
+  // window.addEventListener("automathon:matchend", function (event) { ... event.detail ... }).
+  AutomathonPage_Notify: function (typePtr, detailPtr) {
+    var type = UTF8ToString(typePtr);
+    var detail = null;
+    if (detailPtr) {
+      try { detail = JSON.parse(UTF8ToString(detailPtr)); } catch (e) { }
+    }
+    window.dispatchEvent(new CustomEvent("automathon:" + type, { detail: detail }));
+  },
 });

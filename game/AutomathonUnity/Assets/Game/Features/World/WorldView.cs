@@ -43,14 +43,79 @@ namespace Automathon.Game
         private ReplayInputProvider replayLeft;
         private bool replayEndLogged;
 
-        // Browser only: simulation frames owed to the real time (the page draws at the screen's refresh rate)
-#pragma warning disable CS0414 // read only in the browser build (FramesToSimulate)
+        // Simulation frames owed (FramesToSimulate): to the real time in the browser, which draws at the screen's refresh
+        // rate, to the speed elsewhere
         private float frameAccumulator;
-#pragma warning restore CS0414
         private const int MaxFramesPerUpdate = 4;
+
+        private float speed = 1f;
+        private bool paused;
+        private bool showEndScreen = true;
 
         /// <summary>A replay is being played.</summary>
         public bool IsReplaying => replay != null;
+
+        /// <summary>The replay being played (null otherwise), for the web page (Web/WebBridge).</summary>
+        public MatchReplay CurrentReplay => replay;
+
+        // For the web page that hosts the game (Web/WebBridge), on every kind of match (replay, AI, human):
+        /// <summary>A match starts: its replay, or null for a match played from the game's menu.</summary>
+        public event Action<MatchReplay> MatchStarted;
+        /// <summary>The match is over: how it ended (seen from the left ship), and for a replay whether it is the end
+        /// recorded on the Headless (null: not a replay, or no recorded end).</summary>
+        public event Action<ReplayResult, bool?> MatchEnded;
+        /// <summary>The light of the end-of-game explosion covers the whole screen: the arena has just been cleared.</summary>
+        public event Action ScreenCovered;
+        /// <summary>The end of game (slow motion and light explosion) is over: the light is gone.</summary>
+        public event Action EndSequenceOver;
+
+        /// <summary>
+        /// Speed of the match: 1 = real time (60 frames per second), 2 = twice as fast... between 0.1 and 8. The end of
+        /// game (slow motion, light explosion) keeps its own pace.
+        /// </summary>
+        public float Speed
+        {
+            get => speed;
+            set
+            {
+                speed = Mathf.Clamp(value, 0.1f, 8f);
+                ApplyTimeScale();
+            }
+        }
+
+        /// <summary>
+        /// Pauses the match: simulation, views, particles and sound. The light explosion of an end of game in progress
+        /// goes on to its end.
+        /// </summary>
+        public bool Paused
+        {
+            get => paused;
+            set
+            {
+                paused = value;
+                AudioListener.pause = value;
+                ApplyTimeScale();
+            }
+        }
+
+        /// <summary>
+        /// False: no end screen (winner ship, DRAW) after the light explosion, nor menu after it; the light fades away to
+        /// an empty arena, for a page that shows its own result (see Web/WebBridge).
+        /// </summary>
+        public bool ShowEndScreen
+        {
+            get => showEndScreen;
+            set => showEndScreen = value;
+        }
+
+        // Time.timeScale drives everything visual (views, particles, animations, shakes): the speed of the match, or 0 in
+        // pause. The end-of-game sequence sets it itself (slow motion), then ApplyTimeScale again when it is over.
+        private void ApplyTimeScale()
+        {
+            if (isEndOfGameSequenceRunning)
+                return;
+            Time.timeScale = paused ? 0f : speed;
+        }
 
         private void Awake()
         {
@@ -150,6 +215,7 @@ namespace Automathon.Game
             replayLeft = null;
             GameRules.Set(LoadRules()); // also undoes the rules of a replay
             GameplayManager.Reset(InputProviders[0], InputProviders[1]);
+            MatchStarted?.Invoke(null);
         }
 
         /// <summary>
@@ -170,7 +236,9 @@ namespace Automathon.Game
             frameAccumulator = 0;
             LobbyState = LobbyStates.Input;
             UnityEngine.Debug.Log($"[Replay] {matchReplay.LeftName ?? "left"} (green) vs {matchReplay.RightName ?? "right"} (red), "
-                                  + $"seed {matchReplay.Seed}, {matchReplay.Steps.Count} steps");
+                                  + $"seed {matchReplay.Seed}, {matchReplay.Steps.Count} steps"
+                                  + (matchReplay.AwaitingSteps ? ", live" : ""));
+            MatchStarted?.Invoke(matchReplay);
         }
 
         /// <summary>
@@ -191,8 +259,8 @@ namespace Automathon.Game
                 GameplayManager.ClearArena();
                 SlowMotion.End();
             }
-            Time.timeScale = 1f;
             isEndOfGameSequenceRunning = false;
+            ApplyTimeScale();
         }
 
         private void Update()
@@ -219,15 +287,24 @@ namespace Automathon.Game
 
         private int FramesToSimulate()
         {
+            if (paused)
+            {
+                frameAccumulator = 0;
+                return 0;
+            }
 #if UNITY_WEBGL && !UNITY_EDITOR
-            // Screens refresh at 60, 120, 144 Hz...: the simulation stays at GameplayConstants.FRAMERATE frames per second,
-            // and drops the time it can't catch up with (tab in the background, slow machine)
-            frameAccumulator += Time.unscaledDeltaTime * GameplayConstants.FRAMERATE;
+            // Screens refresh at 60, 120, 144 Hz...: the simulation stays at GameplayConstants.FRAMERATE frames per second
+            // (times the speed), and drops the time it can't catch up with (tab in the background, slow machine)
+            frameAccumulator += Time.unscaledDeltaTime * GameplayConstants.FRAMERATE * speed;
             int frames = (int)frameAccumulator;
             frameAccumulator -= frames;
-            return Mathf.Min(frames, MaxFramesPerUpdate);
+            return Mathf.Min(frames, MaxFramesPerUpdate * Mathf.CeilToInt(speed));
 #else
-            return 1; // Application.targetFrameRate paces the game
+            // Application.targetFrameRate paces the game: one frame per Update at normal speed
+            frameAccumulator += speed;
+            int frames = (int)frameAccumulator;
+            frameAccumulator -= frames;
+            return frames;
 #endif
         }
 
@@ -249,10 +326,12 @@ namespace Automathon.Game
 
             replayEndLogged = true;
             ReplayResult result = MatchReplay.CurrentResult();
-            string verdict = replay.Result == null ? "no recorded end to compare"
-                           : result.SameAs(replay.Result) ? "SAME as recorded"
+            bool? sameAsRecorded = replay.Result == null ? null : result.SameAs(replay.Result);
+            string verdict = sameAsRecorded == null ? "no recorded end to compare"
+                           : sameAsRecorded.Value ? "SAME as recorded"
                            : $"DIFFERENT from the recorded end ({replay.Result})";
             UnityEngine.Debug.Log($"[Replay] End: {result} -> {verdict}");
+            MatchEnded?.Invoke(result, sameAsRecorded);
         }
 
 
@@ -298,6 +377,7 @@ namespace Automathon.Game
         {
             LobbyState = LobbyStates.End;
             StartCoroutine(EndOfGameSequence(() => endCard.Scroll(winner), loserPosition.ToVector2()));
+            AnnounceEndOfMatchNotReplayed();
         }
 
         // A draw gets the same ending, with the light starting between the two ships
@@ -305,6 +385,15 @@ namespace Automathon.Game
         {
             LobbyState = LobbyStates.End;
             StartCoroutine(EndOfGameSequence(endCard.ScrollDraw, position.ToVector2()));
+            AnnounceEndOfMatchNotReplayed();
+        }
+
+        // The end of a replay is announced by EndReplayIfOver, right after this frame, with its check against the
+        // recorded end
+        private void AnnounceEndOfMatchNotReplayed()
+        {
+            if (replay == null)
+                MatchEnded?.Invoke(MatchReplay.CurrentResult(), null);
         }
 
         // Slow motion + light explosion. Under the light, once the screen is fully covered, the arena disappears and the
@@ -330,13 +419,20 @@ namespace Automathon.Game
             StopCoroutine(slowingDown);
             GameplayManager.ClearArena();
             SlowMotion.End();
-            showEndCard();
-            endCard.SetInteractable(false);
+            if (showEndScreen)
+            {
+                showEndCard();
+                endCard.SetInteractable(false);
+            }
+            ScreenCovered?.Invoke();
 
             yield return new WaitUntil(() => explosionFinished);
 
-            endCard.SetInteractable(true);
+            if (showEndScreen)
+                endCard.SetInteractable(true);
             isEndOfGameSequenceRunning = false;
+            ApplyTimeScale();
+            EndSequenceOver?.Invoke();
         }
 
         private static IEnumerator RampTimeScale(float target, float duration)

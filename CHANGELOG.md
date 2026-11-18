@@ -1,5 +1,22 @@
 # Changelog
 
+## Non publié
+
+Jeu web seulement (outil des organisateurs, absent de ce kit), pour l'affichage du tournoi : la simulation ne change
+pas, les replays de la 1.0.0 restent valides et `VERSION` reste 1.0.0. Rien ne change pour les agents ni pour
+l'entraînement.
+
+### Ajouté
+- Le jeu web se pilote depuis la page qui l'héberge (`Game/Features/Web/WebBridge.cs`) :
+  - il prévient la page de chaque étape d'un match par des événements sur `window` : `automathon:ready`,
+    `matchstart`, `matchend` (résultat, et comparaison à la fin enregistrée), `screencovered` (la lumière de fin
+    couvre l'écran), `sequenceend`, `error` ;
+  - commandes `Pause`, `Resume`, `SetSpeed` (jusqu'à ×8), `SetMuted`, et `SetEndScreen` pour finir sans l'écran de fin
+    du jeu (le ralenti et l'explosion de lumière restent, la page pose son propre résultat) ;
+  - matchs en direct : `PlayLive`, `AppendSteps`, `EndLive` ; le jeu attend les steps suivants au lieu de finir.
+- Version du jeu dans les replays (`MatchReplay.GameVersion`) : le jeu web refuse un replay d'une autre version que la
+  sienne.
+
 ## 1.0.0 (17 novembre 2026)
 
 Version des participants du hackathon : les règles du jeu sont figées (variante « v6 », choisie après des

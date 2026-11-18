@@ -16,6 +16,12 @@ namespace Automathon.AI
 
         public int Version = CurrentVersion;
 
+        /// <summary>
+        /// Version of the game that recorded the match (VERSION of the repository, for example "1.0.0"), null = unknown.
+        /// The web game refuses a replay recorded by another version: its simulation may differ (see Web/WebBridge).
+        /// </summary>
+        public string GameVersion;
+
         /// <summary>Map seed and wall density, as in ResetOptions (null density = default density).</summary>
         public int Seed;
         public double? MapDensity;
@@ -33,6 +39,13 @@ namespace Automathon.AI
         /// <summary>End of the match as recorded on the Headless (to check a replay), may be null.</summary>
         public ReplayResult Result;
 
+        /// <summary>
+        /// Match played live: its steps are still being added as the platform plays them (WebBridge.AppendSteps). The
+        /// replay then waits for the next step instead of ending, until this goes back to false (WebBridge.EndLive).
+        /// </summary>
+        [Newtonsoft.Json.JsonIgnore]
+        public bool AwaitingSteps;
+
         /// <summary>Frames covered by the steps (the match may end earlier, when a ship dies).</summary>
         public int TotalFrames
         {
@@ -49,7 +62,7 @@ namespace Automathon.AI
         {
             if (Version != CurrentVersion)
                 throw new FormatException($"Replay version {Version}, this game reads version {CurrentVersion}.");
-            if (Steps == null || Steps.Count == 0)
+            if (Steps == null || (Steps.Count == 0 && !AwaitingSteps))
                 throw new FormatException("The replay has no steps.");
         }
 
@@ -151,8 +164,13 @@ namespace Automathon.AI
             this.side = side;
         }
 
-        /// <summary>All the recorded actions have been played and the last one is over.</summary>
-        public bool IsFinished => nextStep >= replay.Steps.Count && GameplayManager.Frame >= nextStepFrame;
+        /// <summary>All the recorded actions have been played and the last one is over (and no more are coming).</summary>
+        public bool IsFinished => !replay.AwaitingSteps && OutOfSteps;
+
+        private bool OutOfSteps => nextStep >= replay.Steps.Count && GameplayManager.Frame >= nextStepFrame;
+
+        /// <summary>A live match whose next step hasn't arrived yet holds its frame (see GameplayManager.InputsReady).</summary>
+        public override bool IsReadyForFrame() => !(replay.AwaitingSteps && OutOfSteps);
 
         public override void BeforeFrame()
         {
