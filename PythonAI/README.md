@@ -140,6 +140,9 @@ Sous Linux, uv installe la version **CPU** de `torch` (plus légère : PPO avec 
 
 ### 3.4 Databricks (entraînement dans le cloud)
 
+Pendant le hackathon, le guide `databricks/guide_participants_automathon.html` et le notebook
+`databricks/automathon_demarrage.ipynb` mènent du cluster de l'équipe à l'envoi d'un premier agent dans l'Arène.
+
 Le notebook `databricks/Automathon_Databricks.ipynb` fait tout, cellule par cellule : installation des
 bibliothèques, décompression du kit déposé dans un Volume (`Linux-ARM-databricks` ou `Linux-x86-64`, choisi selon le
 processeur de la machine), diagnostic de la machine et du Headless, mesure du débit, duel de test, entraînement,

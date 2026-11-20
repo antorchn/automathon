@@ -1,22 +1,5 @@
 # Changelog
 
-## Non publié
-
-Jeu web seulement (outil des organisateurs, absent de ce kit), pour l'affichage du tournoi : la simulation ne change
-pas, les replays de la 1.0.0 restent valides et `VERSION` reste 1.0.0. Rien ne change pour les agents ni pour
-l'entraînement.
-
-### Ajouté
-- Le jeu web se pilote depuis la page qui l'héberge (`Game/Features/Web/WebBridge.cs`) :
-  - il prévient la page de chaque étape d'un match par des événements sur `window` : `automathon:ready`,
-    `matchstart`, `matchend` (résultat, et comparaison à la fin enregistrée), `screencovered` (la lumière de fin
-    couvre l'écran), `sequenceend`, `error` ;
-  - commandes `Pause`, `Resume`, `SetSpeed` (jusqu'à ×8), `SetMuted`, et `SetEndScreen` pour finir sans l'écran de fin
-    du jeu (le ralenti et l'explosion de lumière restent, la page pose son propre résultat) ;
-  - matchs en direct : `PlayLive`, `AppendSteps`, `EndLive` ; le jeu attend les steps suivants au lieu de finir.
-- Version du jeu dans les replays (`MatchReplay.GameVersion`) : le jeu web refuse un replay d'une autre version que la
-  sienne.
-
 ## 1.0.0 (17 novembre 2026)
 
 Version des participants du hackathon : les règles du jeu sont figées (variante « v6 », choisie après des
@@ -60,7 +43,13 @@ entraînements comparés des meilleurs agents sur plusieurs variantes).
   contre un agent : outil des organisateurs, absent de ce kit. Côté kit : `Headless --replay fichier.json` rejoue un
   match enregistré (graine, règles, actions) et vérifie qu'il finit comme à l'enregistrement, et le jeu de bureau en
   rejoue un avec `AutomathonGame -replay fichier.json`. Le jeu de bureau accepte aussi une adresse d'agent
-  `ws://` / `wss://` (WebSocket) à la place d'un port.
+  `ws://` / `wss://` (WebSocket) à la place d'un port. Le jeu web se pilote depuis la page qui l'héberge
+  (`Game/Features/Web/WebBridge.cs`) : événements de match sur `window` (`automathon:ready`, `matchstart`,
+  `matchend`, `screencovered`, `sequenceend`, `error`), pause, vitesse, son, fin sans l'écran de fin du jeu, matchs en
+  direct ; il refuse un replay d'une autre version que la sienne (`MatchReplay.GameVersion`).
+- Dossier `databricks/` : guide des participants (`guide_participants_automathon.html`, à ouvrir dans un navigateur)
+  et notebook de démarrage de l'Arène (`automathon_demarrage.ipynb`), en plus de `Automathon_Databricks.ipynb`. Tout
+  le dossier est dans les kits tout-en-un.
 - Documentation : l'environnement et le script d'entraînement du kit sont présentés comme un exemple, que les
   équipes peuvent modifier ou remplacer ; section « Performance de l'entraînement » (version simple et version
   optimisée de l'environnement, mesures, profil, conseils) et section « Règles du hackathon » (à compléter par les

@@ -133,7 +133,11 @@ Les règles à connaître :
 
 ## 6. Entraîner dans le cloud (Databricks)
 
-Le notebook `databricks/Automathon_Databricks.ipynb` permet d'entraîner sur Databricks, avec le kit
+Pendant le hackathon, suivez le guide `databricks/guide_participants_automathon.html` (à ouvrir dans un navigateur) :
+il présente le cluster de votre équipe, le notebook `databricks/automathon_demarrage.ipynb`, qui entraîne un premier
+agent et prépare son zip, et l'envoi de votre agent dans l'Arène.
+
+Le notebook `databricks/Automathon_Databricks.ipynb` détaille davantage l'entraînement sur Databricks, avec le kit
 `Automathon_1.0.0_Linux-ARM-databricks.zip` (machines ARM) ou `Automathon_1.0.0_Linux-x86-64.zip` (machines x86) :
 il choisit le bon selon la machine, et explique chaque étape, de l'installation à la récupération du modèle sur
 votre PC.

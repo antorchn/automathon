@@ -24,7 +24,7 @@ Headless (simulateur sans affichage) déjà compilés, et le kit Python. Rien d'
 | Dossier | Contenu |
 |---|---|
 | `PythonAI/` | Kit Python : communication avec le jeu, environnement Gymnasium, agents d'exemple, entraînement PPO, évaluation. Documentation complète : [PythonAI/README.md](PythonAI/README.md) |
-| `databricks/` | Notebook pour entraîner sur Databricks |
+| `databricks/` | Guide des participants (`guide_participants_automathon.html`, à ouvrir dans un navigateur) et notebooks Databricks : `automathon_demarrage.ipynb` (premier agent et envoi dans l'Arène), `Automathon_Databricks.ipynb` (entraînement détaillé dans un Volume personnel) |
 | `game/` | Code source du jeu : règles en C# (`game/AutomathonUnity/Assets/Core/`), projet Unity, simulateur Headless |
 | `tools/` | `smoke_test.py` (test rapide du Headless) et `build.py` (compilation) |
 

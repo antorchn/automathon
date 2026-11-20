@@ -68,8 +68,22 @@ PARTICIPANT_EXCLUDED = (
 )
 # kit/<fichier> va a la racine du kit des participants (zips et depot) ; README.md y remplace celui de ce depot
 KIT_ROOT_FILES = ("README.md", "DEMARRAGE.md")
-# Autres fichiers du depot ajoutes aux kits tout-en-un, au meme chemin
-KIT_EXTRA_FILES = ("tools/smoke_test.py", "databricks/Automathon_Databricks.ipynb", "VERSION", "CHANGELOG.md")
+# Autres fichiers du depot ajoutes aux kits tout-en-un, au meme chemin ; un chemin termine par "/" ajoute tous les
+# fichiers suivis par git de ce dossier
+KIT_EXTRA_FILES = ("tools/smoke_test.py", "databricks/", "VERSION", "CHANGELOG.md")
+
+
+def kit_extra_files() -> list[str]:
+    """KIT_EXTRA_FILES, dossiers developpes en leurs fichiers suivis par git (chemins relatifs, separateurs /)."""
+    files = []
+    for rel in KIT_EXTRA_FILES:
+        if rel.endswith("/"):
+            listed = subprocess.run(["git", "ls-files", "-z", "--", rel], cwd=ROOT, capture_output=True, text=True,
+                                    check=True).stdout.split("\0")
+            files += sorted(f for f in listed if f)
+        else:
+            files.append(rel)
+    return files
 
 
 def participant_excluded(rel: str) -> bool:
@@ -264,7 +278,7 @@ def package():
                       skip_dirs=PYTHONAI_EXCLUDED_DIRS, skip_files=PYTHONAI_EXCLUDED_FILES, participant_kit=True)
             for kit_file in KIT_ROOT_FILES:
                 _add_file(z, ROOT / "kit" / kit_file, f"{top}/{kit_file}", unix)
-            for rel in KIT_EXTRA_FILES:
+            for rel in kit_extra_files():
                 _add_file(z, ROOT / rel, f"{top}/{rel}", unix)
         made.append(zip_path)
         print(f"- {name} : {zip_path.relative_to(ROOT)} ({zip_path.stat().st_size // 2**20} Mo)")
