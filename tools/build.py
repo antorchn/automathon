@@ -2,9 +2,9 @@
 Compile le Headless (.NET) et le jeu visuel (Unity), et prepare les paquets tout-en-un.
 
 Usage (depuis la racine du depot) :
-    python tools/build.py headless [--rid win-x64|linux-x64|linux-arm64|osx-arm64|osx-x64|all]
-    python tools/build.py game     [--target windows|linux|macos|webgl|all]
-    python tools/build.py package
+    python tools/build.py headless [--rid win-x64|win-arm64|linux-x64|linux-arm64|osx-arm64|osx-x64|all]
+    python tools/build.py game     [--target windows|windows-arm64|linux|macos|webgl|all]
+    python tools/build.py package  [--name Windows-ARM64 ...]
     python tools/build.py all
     python tools/build.py export DOSSIER
 
@@ -13,8 +13,9 @@ Sorties :
     build/game/<cible>/         jeu visuel (AutomathonGame.exe / .x86_64 / .app ; webgl : index.html + Build/)
     build/dist/*.zip            kits tout-en-un des participants (jeu + Headless/ + PythonAI/ + guide)
     build/logs/                 logs de compilation Unity
-Sans --rid / --target : plateforme courante uniquement. --target all : les trois jeux de bureau (webgl a part,
-a demander explicitement : module "Web Build Support" de Unity requis).
+Sans --rid / --target : plateforme courante uniquement. --target all : les jeux de bureau (webgl a part,
+a demander explicitement : module "Web Build Support" de Unity requis). Sans --name, package refait tous les paquets
+dont le jeu et le Headless sont compiles.
 
 export : copie dans DOSSIER (le depot des participants) les fichiers suivis par git, sans ceux reserves aux
 organisateurs (PARTICIPANT_EXCLUDED), avec les fichiers de kit/ a la racine. Voir ORGANISATION.md.
@@ -39,20 +40,26 @@ PYTHONAI_DIR = ROOT / "PythonAI"
 BUILD_DIR = ROOT / "build"
 VERSION = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
 
-RIDS = ["win-x64", "linux-x64", "linux-arm64", "osx-arm64", "osx-x64"]
+RIDS = ["win-x64", "win-arm64", "linux-x64", "linux-arm64", "osx-arm64", "osx-x64"]
 
-# Cible du jeu -> (argument -buildTarget de Unity, executable produit)
+# Cible du jeu -> (argument -buildTarget de Unity, executable produit). windows-arm64 : meme cible Unity, avec
+# l'architecture ARM64 (Assets/Editor/AutomathonBuild.cs)
 TARGETS = {
     "windows": ("Win64", "AutomathonGame.exe"),
+    "windows-arm64": ("Win64", "AutomathonGame.exe"),
     "linux": ("Linux64", "AutomathonGame.x86_64"),
     "macos": ("OSXUniversal", "AutomathonGame.app"),
     "webgl": ("WebGL", "index.html"),  # a servir par HTTP (PythonAI/webplay/server.py), voir PythonAI/webplay/README.md
 }
-DESKTOP_TARGETS = ["windows", "linux", "macos"]
+DESKTOP_TARGETS = ["windows", "windows-arm64", "linux", "macos"]
+# Architecture attendue des executables Windows, verifiee dans leur en-tete PE apres compilation
+WINDOWS_ARCH = {"windows": "x64", "windows-arm64": "arm64", "win-x64": "x64", "win-arm64": "arm64"}
+PE_MACHINES = {0x8664: "x64", 0xAA64: "arm64", 0x14C: "x86"}
 
 # Paquet tout-en-un -> (cible du jeu, ou None sans jeu visuel ; RID du Headless)
 PACKAGES = {
     "Windows": ("windows", "win-x64"),
+    "Windows-ARM64": ("windows-arm64", "win-arm64"),
     "Linux-x86-64": ("linux", "linux-x64"),
     "Linux-ARM-databricks": (None, "linux-arm64"),
     "MacOS-arm64": ("macos", "osx-arm64"),
@@ -112,6 +119,29 @@ def run(cmd: list[str], **kwargs) -> int:
     return subprocess.run(cmd, **kwargs).returncode
 
 
+def pe_architecture(path: Path) -> str:
+    """Architecture d'un executable ou d'une DLL Windows, lue dans son en-tete PE (x64, arm64, x86)."""
+    with open(path, "rb") as f:
+        data = f.read(4096)
+    offset = int.from_bytes(data[0x3C:0x40], "little")
+    if data[:2] != b"MZ" or data[offset:offset + 4] != b"PE\0\0":
+        return "inconnue"
+    machine = int.from_bytes(data[offset + 4:offset + 6], "little")
+    return PE_MACHINES.get(machine, hex(machine))
+
+
+def check_windows_arch(name: str, files: list[Path]):
+    """Verifie que les executables Windows de `name` (cible ou RID) sont de l'architecture attendue."""
+    expected = WINDOWS_ARCH.get(name)
+    if expected is None:
+        return
+    for path in files:
+        found = pe_architecture(path)
+        if found != expected:
+            sys.exit(f"{path.relative_to(ROOT)} est en {found}, {expected} attendu.")
+        print(f"Architecture {found} : {path.relative_to(ROOT)}")
+
+
 # --------------------------------------------------------------------------- Headless
 
 def build_headless(rids: list[str]):
@@ -127,6 +157,7 @@ def build_headless(rids: list[str]):
         binary = out / ("Headless.exe" if rid.startswith("win") else "Headless")
         if code != 0 or not binary.exists():
             sys.exit(f"Echec de la compilation du Headless {rid}.")
+        check_windows_arch(rid, [binary])
         print(f"OK : {binary.relative_to(ROOT)}")
 
 
@@ -220,6 +251,7 @@ def build_game(targets: list[str]):
             errors = [l for l in lines if "error" in l.lower() or "exception" in l.lower()][-20:]
             print("\n".join(errors or lines[-30:]))
             sys.exit(f"Echec de la compilation du jeu {target} (code {code}, {minutes:.1f} min). Voir {log}.")
+        check_windows_arch(target, [out / executable, out / "UnityPlayer.dll"])
         print(f"OK en {minutes:.1f} min : {(out / executable).relative_to(ROOT)}")
 
 
@@ -256,11 +288,13 @@ def _add_tree(z: zipfile.ZipFile, src: Path, prefix: str, unix: bool, skip_dirs=
             _add_file(z, path, f"{prefix}/{path.relative_to(src).as_posix()}", unix)
 
 
-def package():
+def package(names: list[str] | None = None):
     dist = BUILD_DIR / "dist"
     dist.mkdir(parents=True, exist_ok=True)
     made = []
     for name, (target, rid) in PACKAGES.items():
+        if names and name not in names:
+            continue
         headless = BUILD_DIR / "headless" / rid
         game = BUILD_DIR / "game" / target if target else None
         missing = [p for p in (headless, game) if p is not None and not p.is_dir()]
@@ -323,7 +357,8 @@ def main():
     p = sub.add_parser("game", help="compile le jeu visuel avec Unity")
     p.add_argument("--target", default=None, help="windows, linux, macos, webgl ou all (defaut : plateforme courante ; all = "
                         "les jeux de bureau)")
-    sub.add_parser("package", help="cree les paquets tout-en-un a partir de build/")
+    p = sub.add_parser("package", help="cree les paquets tout-en-un a partir de build/")
+    p.add_argument("--name", action="append", choices=list(PACKAGES), help="paquet a creer (repetable ; defaut : tous)")
     sub.add_parser("all", help="tous les Headless, les jeux de bureau, puis les paquets (sans le WebGL)")
     p = sub.add_parser("export", help="exporte le kit des participants dans un dossier (leur depot git)")
     p.add_argument("dest", type=Path)
@@ -342,7 +377,7 @@ def main():
             parser.error(f"--target inconnue : {args.target}")
         build_game(targets)
     elif args.command == "package":
-        package()
+        package(args.name)
     elif args.command == "export":
         export(args.dest, args.allow_dirty)
     else:

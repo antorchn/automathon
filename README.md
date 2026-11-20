@@ -15,6 +15,7 @@ Headless (simulateur sans affichage) déjà compilés, et le kit Python. Rien d'
 | Kit | Pour |
 |---|---|
 | `Automathon_<version>_Windows.zip` | PC Windows 10 ou 11, 64 bits |
+| `Automathon_<version>_Windows-ARM64.zip` | PC Windows 11 sur processeur ARM (Snapdragon) : jeu et Headless natifs ARM64 (voir l'installation dans `DEMARRAGE.md`) |
 | `Automathon_<version>_Linux-x86-64.zip` | PC Linux x86-64 |
 | `Automathon_<version>_MacOS-arm64.zip` / `…_MacOS-x64.zip` | Mac Apple Silicon / Mac Intel |
 | `Automathon_<version>_Linux-ARM-databricks.zip` | Databricks sur processeurs ARM : Headless et kit Python, sans jeu graphique (sur une machine x86, le kit `Linux-x86-64`) |

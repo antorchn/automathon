@@ -80,6 +80,7 @@ Automathon_1.0.0_<plateforme>/
 | Kit | Pour |
 |---|---|
 | `Windows` | PC Windows 10 ou 11, 64 bits |
+| `Windows-ARM64` | PC Windows 11 sur processeur ARM : jeu et Headless natifs ARM64, Python x64 (PyTorch n'est pas publié sur PyPI pour Windows ARM) |
 | `Linux-x86-64` | PC Linux x86-64 |
 | `MacOS-arm64` / `MacOS-x64` | Mac Apple Silicon / Mac Intel |
 | `Linux-ARM-databricks` | Databricks sur processeurs ARM (AWS Graviton) : Headless et kit Python, sans jeu graphique (Unity ne produit pas de jeu Linux ARM) |

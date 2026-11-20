@@ -11,8 +11,9 @@ Headless déjà compilés : vous n'avez besoin ni de Unity ni de .NET.
 
 ## 1. Installation (une fois, environ 10 minutes)
 
-1. **Le kit** : décompressez l'archive de votre plateforme (`Automathon_1.0.0_Windows.zip`, `…_Linux-x86-64.zip`,
-   `…_MacOS-arm64.zip` ou `…_MacOS-x64.zip`). Sous Windows, choisissez un chemin court, par exemple `C:\automathon`.
+1. **Le kit** : décompressez l'archive de votre plateforme (`Automathon_1.0.0_Windows.zip`,
+   `…_Windows-ARM64.zip` pour un PC à processeur ARM, `…_Linux-x86-64.zip`, `…_MacOS-arm64.zip` ou
+   `…_MacOS-x64.zip`). Sous Windows, choisissez un chemin court, par exemple `C:\automathon`.
 2. **uv**, qui installe Python et toutes les dépendances aux versions exactes du kit :
 
    - Windows (PowerShell) :
@@ -37,6 +38,13 @@ Headless déjà compilés : vous n'avez besoin ni de Unity ni de .NET.
 
    `uv sync` crée l'environnement Python dans `PythonAI/.venv` (PyTorch compris, c'est l'étape la plus longue).
    **Toutes les commandes ci-dessous se lancent depuis `PythonAI/`.**
+
+   Sur un PC Windows à processeur ARM, PyTorch n'existe pas pour le Python ARM : demandez un Python x64, que
+   Windows exécute en émulation (le jeu et le Headless du kit ARM64 restent natifs) :
+
+   ```powershell
+   uv sync --python cpython-3.12-windows-x86_64-none
+   ```
 4. **Vérifiez que tout marche** :
 
    ```bash

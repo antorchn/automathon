@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 
@@ -26,14 +27,24 @@ namespace AutomathonEditor
             BuildTarget buildTarget;
             BuildTargetGroup targetGroup = BuildTargetGroup.Standalone;
             string executable;
+            string windowsArchitecture = null;  // valeur de UnityEditor.Build.OSArchitecture
             switch (target)
             {
-                case "windows": buildTarget = BuildTarget.StandaloneWindows64; executable = "AutomathonGame.exe"; break;
+                case "windows":
+                    buildTarget = BuildTarget.StandaloneWindows64; executable = "AutomathonGame.exe";
+                    windowsArchitecture = "x64";
+                    break;
+                case "windows-arm64":
+                    buildTarget = BuildTarget.StandaloneWindows64; executable = "AutomathonGame.exe";
+                    windowsArchitecture = "ARM64";
+                    break;
                 case "linux": buildTarget = BuildTarget.StandaloneLinux64; executable = "AutomathonGame.x86_64"; break;
                 case "macos": buildTarget = BuildTarget.StandaloneOSX; executable = "AutomathonGame.app"; break;
                 // Unity écrit index.html et Build/ dans le dossier donné
                 case "webgl": buildTarget = BuildTarget.WebGL; targetGroup = BuildTargetGroup.WebGL; executable = ""; break;
-                default: throw new ArgumentException($"Cible inconnue : {target} (windows, linux, macos ou webgl)");
+                default:
+                    throw new ArgumentException(
+                        $"Cible inconnue : {target} (windows, windows-arm64, linux, macos ou webgl)");
             }
 
             string[] scenes = EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).ToArray();
@@ -46,6 +57,8 @@ namespace AutomathonEditor
             if (!string.IsNullOrEmpty(version))
                 PlayerSettings.bundleVersion = version;
             using WebGLSettingsScope webGLSettings = target == "webgl" ? new WebGLSettingsScope() : null;
+            using WindowsArchitectureScope architecture =
+                windowsArchitecture != null ? new WindowsArchitectureScope(windowsArchitecture) : null;
             try
             {
                 BuildReport report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
@@ -97,6 +110,33 @@ namespace AutomathonEditor
                 PlayerSettings.WebGL.exceptionSupport = exceptionSupport;
                 PlayerSettings.WebGL.dataCaching = dataCaching;
             }
+        }
+
+        /// <summary>
+        /// Architecture du jeu Windows (x64 ou ARM64), appliquée le temps de la compilation : réglage
+        /// UnityEditor.WindowsStandalone.UserBuildSettings.architecture du module Windows de Unity, lu par réflexion
+        /// pour que ce script compile aussi sur un éditeur sans ce module.
+        /// </summary>
+        private sealed class WindowsArchitectureScope : IDisposable
+        {
+            private readonly PropertyInfo property;
+            private readonly object previous;
+
+            public WindowsArchitectureScope(string architecture)
+            {
+                Type settings = AppDomain.CurrentDomain.GetAssemblies()
+                    .Select(a => a.GetType("UnityEditor.WindowsStandalone.UserBuildSettings"))
+                    .FirstOrDefault(t => t != null)
+                    ?? throw new InvalidOperationException(
+                        "Module Windows de Unity introuvable (UnityEditor.WindowsStandalone.UserBuildSettings).");
+                property = settings.GetProperty("architecture", BindingFlags.Public | BindingFlags.Static)
+                    ?? throw new InvalidOperationException("Réglage UserBuildSettings.architecture introuvable.");
+                previous = property.GetValue(null);
+                property.SetValue(null, Enum.Parse(property.PropertyType, architecture));
+                UnityEngine.Debug.Log($"[AutomathonBuild] architecture Windows : {property.GetValue(null)}");
+            }
+
+            public void Dispose() => property.SetValue(null, previous);
         }
 
         private static string OptionalArg(string name)

@@ -50,6 +50,9 @@ entraînements comparés des meilleurs agents sur plusieurs variantes).
 - Dossier `databricks/` : guide des participants (`guide_participants_automathon.html`, à ouvrir dans un navigateur)
   et notebook de démarrage de l'Arène (`automathon_demarrage.ipynb`), en plus de `Automathon_Databricks.ipynb`. Tout
   le dossier est dans les kits tout-en-un.
+- Kit `Windows-ARM64` (PC Windows 11 à processeur ARM) : jeu et Headless natifs ARM64 (`tools/build.py game
+  --target windows-arm64`, `headless --rid win-arm64`). PyTorch n'étant pas publié sur PyPI pour Windows ARM, le
+  kit Python s'y installe avec un Python x64, exécuté en émulation (`uv sync --python cpython-3.12-windows-x86_64-none`).
 - Documentation : l'environnement et le script d'entraînement du kit sont présentés comme un exemple, que les
   équipes peuvent modifier ou remplacer ; section « Performance de l'entraînement » (version simple et version
   optimisée de l'environnement, mesures, profil, conseils) et section « Règles du hackathon » (à compléter par les
