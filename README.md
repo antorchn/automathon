@@ -28,7 +28,7 @@ Headless (simulateur sans affichage) déjà compilés, et le kit Python. Rien d'
 | `databricks/` | Guide des participants (`guide_participants_automathon.html`, à ouvrir dans un navigateur) et notebooks Databricks : `automathon_demarrage.ipynb` (premier agent et envoi dans l'Arène), `Automathon_Databricks.ipynb` (entraînement détaillé dans un Volume personnel) |
 | `game/` | Code source du jeu : règles en C# (`game/AutomathonUnity/Assets/Core/`), projet Unity, simulateur Headless |
 | `tools/` | `smoke_test.py` (test rapide du Headless) et `build.py` (compilation) |
-| `arene/`, `worker/`, `agent_host/`, `scripts/`, `tests/` | Code de l'arène en ligne, le site où l'on envoie son agent pour le classer : site web, worker qui joue les parties, hôte isolé des agents, déploiement et tests. Installation : [INSTALL.md](INSTALL.md). Inutile pour participer : ce n'est pas le kit. |
+| `arene/`, `worker/`, `agent_host/`, `scripts/`, `tests/` | Code de l'arène en ligne, le site où l'on envoie son agent pour le classer : site web, worker qui joue les parties, hôte isolé des agents, déploiement et tests. Installation : [INSTALL.md](INSTALL.md) ; intégration au site de l'association : [INTEGRATION_SITE.md](INTEGRATION_SITE.md). Inutile pour participer : ce n'est pas le kit. |
 
 Le code du jeu fait foi pour les règles exactes : vitesses, dégâts, collisions, génération des cartes.
 

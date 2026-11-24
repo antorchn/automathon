@@ -36,3 +36,14 @@ Ce document consigne les choix pris pour les points laissés ouverts par `Spec �
   négatif et stable, et le nom de l'équipe comme nom affiché. Réimporter le même nom de dossier remplace son agent.
 - **Sans limites** : l'import ne passe ni par le cooldown ni par `QUEUE_MAX` (`submit_agent(enforce_limits=False)`),
   mais par la même validation et le même placement que les autres ; l'événement est noté `admin_import`.
+
+## 9. Intégration derrière le site de l'association (`arene/middleware.py`, `scripts/configure_public.sh`)
+- **Proxys de confiance** : `TRUSTED_PROXY` accepte des adresses et des réseaux. Par défaut `127.0.0.1,172.16.0.0/12` :
+  derrière Docker, le site voit Caddy et le tunnel SSH par la passerelle du réseau Compose (172.x.0.1). Le script de
+  passage en public y ajoute l'adresse du reverse proxy du site.
+- **X-Forwarded-For lu par la droite** : l'adresse du visiteur est la plus à droite qui n'est pas un proxy de
+  confiance ; ce qu'un visiteur écrit lui-même dans l'en-tête reste à gauche et ne compte pas.
+- **Cohérence** : l'arène refuse de démarrer si le chemin de `PUBLIC_URL` n'est pas `ARENE_BASE_PATH`.
+- **SITE_URL déduit** : sur la VM de l'arène, le worker joint le site à `http://arene-web:8000<ARENE_BASE_PATH>` ;
+  `SITE_URL` ne sert plus qu'à un worker sur une autre machine.
+

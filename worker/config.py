@@ -25,7 +25,11 @@ class WorkerConfig:
 
     @classmethod
     def from_env(cls) -> "WorkerConfig":
-        site_url = os.environ.get("SITE_URL", "http://127.0.0.1:8001/arene").strip().rstrip("/")
+        # Sur la VM de l'arène, le site est joint par le réseau interne de Compose, sous le même sous-chemin ;
+        # SITE_URL ne sert qu'à un worker installé sur une autre machine (adresse publique de l'arène).
+        base_path = os.environ.get("ARENE_BASE_PATH", "/arene").strip().strip("/")
+        default_site = "http://arene-web:8000" + (f"/{base_path}" if base_path else "")
+        site_url = (os.environ.get("SITE_URL") or default_site).strip().rstrip("/")
         token = os.environ.get("WORKER_TOKEN", "").strip()
         if not token:
             raise RuntimeError("WORKER_TOKEN est obligatoire pour démarrer le worker.")

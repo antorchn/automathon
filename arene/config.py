@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from urllib.parse import urlsplit
+
 from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -20,7 +22,7 @@ class Settings(BaseSettings):
     public_url: str = Field(default="http://localhost:8001/arene", alias="PUBLIC_URL")
     arene_base_path: str = Field(default="/arene", alias="ARENE_BASE_PATH")
     arene_port: int = Field(default=8001, alias="ARENE_PORT")
-    trusted_proxy: str = Field(default="127.0.0.1", alias="TRUSTED_PROXY")
+    trusted_proxy: str = Field(default="127.0.0.1,172.16.0.0/12", alias="TRUSTED_PROXY")
     secret_key: str = Field(default="dev-insecure-secret-change-me", alias="SECRET_KEY")
 
     github_client_id: str = Field(default="", alias="GITHUB_CLIENT_ID")
@@ -84,6 +86,12 @@ class Settings(BaseSettings):
         # Spec : "L'arène refuse de démarrer avec true si PUBLIC_URL est en HTTPS."
         if self.auth_dev_mode and self.public_url.lower().startswith("https://"):
             raise ValueError("AUTH_DEV_MODE=true est interdit lorsque PUBLIC_URL utilise HTTPS.")
+        public_path = urlsplit(self.public_url).path.rstrip("/")
+        if public_path != self.arene_base_path:
+            raise ValueError(
+                f"PUBLIC_URL ({self.public_url}) doit finir par ARENE_BASE_PATH ({self.arene_base_path or '/'}) : "
+                "c'est le même sous-chemin, vu de l'extérieur et par le site."
+            )
         return self
 
     @property

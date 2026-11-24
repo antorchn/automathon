@@ -28,7 +28,8 @@ sudo ./scripts/setup_vm.sh --mode dev
 - Se déconnecter puis se reconnecter, pour que l'ajout au groupe `docker` prenne effet : `docker ps` doit alors
   marcher sans `sudo`.
 
-Pour l'ouverture au public, relancer plus tard le script avec l'une des deux variantes :
+Pour l'ouverture au public, voir la section 11 : `scripts/configure_public.sh` relance ce script avec la bonne
+variante. À la main, les deux variantes sont :
 
 ```bash
 # Sous-domaine public (Caddy gère HTTPS avec Let's Encrypt)
@@ -164,3 +165,36 @@ docker compose exec arene-web python -m arene.import_agents /data/import
 
 Comptez de 2 à 11 minutes de calcul par agent importé : 21 agents occupent la VM une à quatre heures. La page `/admin`
 montre la file.
+
+## 11. Ouvrir l'arène au public derrière le site de l'association
+
+L'arène est servie sous un sous-chemin du site de l'association (par exemple
+`https://automatants.cs-campus.fr/automathon-rlcs/`) : le reverse proxy du site relaie les requêtes vers la VM, qui
+n'est jamais ouverte directement sur Internet. Ce que fait le site est décrit dans [INTEGRATION_SITE.md](INTEGRATION_SITE.md).
+
+1. **Adresse du reverse proxy du site** : la demander à qui gère le site (INTEGRATION_SITE.md, « L'adresse à
+   communiquer »).
+2. **OAuth App GitHub**, de préférence sur un compte ou une organisation de l'association : GitHub → Settings →
+   Developer settings → OAuth Apps → New OAuth App.
+   - Homepage URL : `https://automatants.cs-campus.fr/automathon-rlcs/`
+   - Authorization callback URL : `https://automatants.cs-campus.fr/automathon-rlcs/auth/github/callback`
+
+   Garder le Client ID, et générer un Client secret : il ne va que dans le `.env` de la VM.
+3. **Sur la VM**, dans `/opt/automathon-arene` (le secret est demandé au clavier) :
+
+```bash
+./scripts/configure_public.sh --url https://automatants.cs-campus.fr/automathon-rlcs --proxy-ip <IP-du-reverse-proxy-du-site> --github-client-id <Client-ID> --admins <votre-login-github>
+```
+
+   Le script sauvegarde `.env`, y règle `PUBLIC_URL`, `ARENE_BASE_PATH`, la connexion GitHub, les administrateurs et
+   `TRUSTED_PROXY` (avec l'adresse du proxy du site), coupe `AUTH_DEV_MODE`, installe Caddy sur le port 8000 ouvert à
+   la seule adresse du proxy du site (`setup_vm.sh --mode proxy`), redéploie et vérifie que l'arène répond.
+4. **Sur le site** : la règle du reverse proxy (INTEGRATION_SITE.md), puis les vérifications de ce document.
+5. **Nettoyage** : sur `/admin`, désactiver les agents de test (`e2e_…`, comptes de développement) pour qu'ils
+   n'apparaissent pas au classement.
+
+Variante sans le site de l'association, sur un sous-domaine qui pointe directement sur la VM (Caddy y gère HTTPS) :
+`./scripts/configure_public.sh --url https://arene.exemple.fr --subdomain --github-client-id <ID> --admins <login>`.
+
+Pour revenir au mode test, restaurer la sauvegarde `.env.bak-<date>` faite par le script, puis `./scripts/deploy.sh --local`.
+

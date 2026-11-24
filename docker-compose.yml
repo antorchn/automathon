@@ -42,7 +42,8 @@ services:
       agent-image:
         condition: service_completed_successfully
     environment:
-      SITE_URL: ${SITE_URL:-http://arene-web:8000/arene}
+      SITE_URL: ${SITE_URL:-}
+      ARENE_BASE_PATH: ${ARENE_BASE_PATH:-/arene}
       WORKER_TOKEN: ${WORKER_TOKEN}
       WORKER_PARALLEL_MATCHES: ${WORKER_PARALLEL_MATCHES:-2}
       WORKER_NICE: ${WORKER_NICE:-10}
