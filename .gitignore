@@ -8,7 +8,17 @@
 __pycache__/
 *.pyc
 .venv/
+.arena_venv/
 *.egg-info/
+
+# Arene en ligne (secrets, base, fichiers telecharges, caches)
+.env
+data/
+sources/
+.arena_cache/
+*.db
+*.db-wal
+*.db-shm
 
 # Sorties d'entrainement et d'evaluation du kit
 PythonAI/training/outputs/

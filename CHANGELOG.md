@@ -1,5 +1,13 @@
 # Changelog
 
+## Arène en ligne V0 (24 novembre 2026)
+
+Implémentation de l'arène en ligne Automathon (`Spec — Arène Automathon en ligne.md`), publiée dans le dépôt des participants ([antorchn/automathon](https://github.com/antorchn/automathon)), à côté du kit :
+- **Site web (`arene/`)** : API et 7 pages (Classement Elo Bradley-Terry, fiche Agent, Envoyer, Mon compte, lecteur Replay WebGL, Règles, Admin), connexion GitHub OAuth (et `AUTH_DEV_MODE` en local HTTP), base SQLite avec migrations automatiques et couche stockage.
+- **Worker & arbitrage (`worker/`)** : exécution des matchs sur Headless 1.0.0 avec deux agents isolés en conteneurs Docker, mesure CPU par cgroups v2, file prioritaire (validation, placement, affinage) et baux atomiques.
+- **Hôte isolé (`agent_host/`)** : image `automathon-agent:1.0.0` (Python 3.12, dépendances du kit 1.0.0, conteneur sans réseau en lecture seule).
+- **Déploiement (`docker-compose.yml`, `scripts/`, `INSTALL.md`)** : téléchargement vérifié des sources v1.0.0, préparation VM Debian 13 (`setup_vm.sh`), script de déploiement (`deploy.sh`), sauvegarde à chaud (`backup.sh`) et test de bout en bout (`e2e_test.py`).
+
 ## 1.0.0 (17 novembre 2026)
 
 Version des participants du hackathon : les règles du jeu sont figées (variante « v6 », choisie après des

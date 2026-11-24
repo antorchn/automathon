@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Envoyer un agent — Arène Automathon{% endblock %}
+{% block content %}
+<h1>Envoyer un agent</h1>
+
+{% if error %}
+  <div class="alert alert-err">{{ error }}</div>
+{% endif %}
+{% if message %}
+  <div class="alert alert-ok">{{ message }}</div>
+{% endif %}
+
+{% if not user %}
+  <div class="panel">
+    <p>Connectez-vous pour envoyer un agent dans l'arène.</p>
+    {% if auth_dev_mode %}
+      <form method="post" action="{{ u('/auth/dev/login') }}" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <input type="text" name="login" placeholder="Login de test (ex: equipe_a)" required />
+        <button type="submit">Connexion de test (AUTH_DEV_MODE)</button>
+      </form>
+    {% else %}
+      <a class="btn" href="{{ u('/auth/github/login') }}">Se connecter avec GitHub</a>
+    {% endif %}
+  </div>
+{% else %}
+  <div class="panel">
+    <h2>Nouvel envoi (.zip)</h2>
+    <p class="muted">
+      Le zip doit contenir un seul dossier <code>&lt;nom&gt;/</code> avec <code>agent.py</code>
+      (classe <code>ParticipantAgent</code>), au plus {{ settings.submission_max_mb }} Mo.
+      Un agent validé remplace votre agent classé précédent.
+    </p>
+    {% if cooldown_s > 0 %}
+      <div class="alert alert-err">Cooldown actif : prochain envoi possible dans <strong>{{ cooldown_text }}</strong>.</div>
+    {% endif %}
+    <form method="post" action="{{ u('/submit') }}" enctype="multipart/form-data" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+      <input type="hidden" name="csrf_token" value="{{ user.csrf }}" />
+      <input type="file" name="agent_zip" accept=".zip" required {% if cooldown_s > 0 %}disabled{% endif %} />
+      <button type="submit" {% if cooldown_s > 0 %}disabled{% endif %}>Envoyer l'agent</button>
+    </form>
+  </div>
+
+  <div class="panel">
+    <h2>Mes envois récents</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Agent</th>
+            <th>Statut</th>
+            <th>File / Estimation</th>
+            <th>Elo</th>
+            <th>Envoyé le</th>
+            <th>Détails</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in submissions %}
+          <tr>
+            <td><a href="{{ u('/agents/' ~ s.id) }}"><strong>{{ s.name }}</strong></a></td>
+            <td>
+              {% if s.status == 'ranked' %}<span class="badge badge-ok">{{ s.status_label }}</span>
+              {% elif s.status == 'rejected' %}<span class="badge badge-err">{{ s.status_label }}</span>
+              {% else %}<span class="badge badge-prov">{{ s.status_label }}</span>{% endif %}
+            </td>
+            <td class="muted">
+              {% if s.queue_position %}
+                Position {{ s.queue_position }} (~{{ s.eta_text }})
+              {% else %}
+                —
+              {% endif %}
+            </td>
+            <td>{% if s.is_active %}{{ '%.1f'|format(s.elo) }} ± {{ '%.1f'|format(s.margin) }}{% else %}—{% endif %}</td>
+            <td class="muted">{{ s.submitted_at }}</td>
+            <td class="muted">
+              {% if s.reject_reason %}<code>{{ s.reject_reason[:160] }}</code>{% else %}—{% endif %}
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="6" class="muted">Aucun agent envoyé pour le moment.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% block title %}{{ agent.name }} — Arène Automathon{% endblock %}
+{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px">
+  <div>
+    <h1>{{ agent.name }}</h1>
+    <p class="muted" style="margin:0">
+      Par {% if agent.avatar_url %}<img class="avatar" src="{{ agent.avatar_url }}" alt="" /> {% endif %}
+      <strong>{{ agent.github_login }}</strong> ·
+      Statut : <span class="badge">{{ agent.status_label }}</span>
+      {% if agent.is_reference %}<span class="badge badge-ref">Bot de référence</span>{% endif %}
+      {% if agent.provisional and agent.is_active %}<span class="badge badge-prov">Provisoire</span>{% endif %}
+    </p>
+  </div>
+  <a class="btn btn-secondary" href="{{ u('/') }}">← Retour au classement</a>
+</div>
+
+<div class="kpi-row">
+  <div class="kpi">
+    <div class="label">Elo actuel</div>
+    <div class="val">{{ '%.1f'|format(agent.elo) }}</div>
+  </div>
+  <div class="kpi">
+    <div class="label">Marge (±1,96σ)</div>
+    <div class="val">{% if agent.is_anchor %}Ancre 1000{% else %}± {{ '%.1f'|format(agent.margin) }}{% endif %}</div>
+  </div>
+  <div class="kpi">
+    <div class="label">Parties jouées</div>
+    <div class="val">{{ agent.games_played }}</div>
+  </div>
+  <div class="kpi">
+    <div class="label">V / N / D</div>
+    <div class="val">{{ agent.wins }} / {{ agent.draws }} / {{ agent.losses }}</div>
+  </div>
+</div>
+
+{% if history %}
+<div class="panel">
+  <h2>Évolution de l'Elo</h2>
+  <canvas id="eloChart" width="900" height="220" style="width:100%;height:220px;background:#0d111a;border:1px solid var(--border);border-radius:8px"></canvas>
+  <script>
+    (function() {
+      const pts = {{ history | tojson }};
+      const c = document.getElementById("eloChart");
+      const ctx = c.getContext("2d");
+      if (!pts.length) return;
+      const pad = { l: 52, r: 18, t: 18, b: 28 };
+      const w = c.width - pad.l - pad.r;
+      const h = c.height - pad.t - pad.b;
+      const elos = pts.map(p => p.elo);
+      let minE = Math.min(...elos) - 20, maxE = Math.max(...elos) + 20;
+      if (maxE - minE < 40) { minE -= 20; maxE += 20; }
+      const x = i => pad.l + (pts.length === 1 ? w / 2 : (i / (pts.length - 1)) * w);
+      const y = v => pad.t + h - ((v - minE) / (maxE - minE)) * h;
+      ctx.strokeStyle = "#253147"; ctx.lineWidth = 1;
+      for (let k = 0; k <= 4; k++) {
+        const val = minE + (k / 4) * (maxE - minE);
+        const yy = y(val);
+        ctx.beginPath(); ctx.moveTo(pad.l, yy); ctx.lineTo(pad.l + w, yy); ctx.stroke();
+        ctx.fillStyle = "#93a1b8"; ctx.font = "11px sans-serif";
+        ctx.fillText(Math.round(val), 8, yy + 4);
+      }
+      ctx.strokeStyle = "#ff6b1a"; ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      pts.forEach((p, i) => {
+        if (i === 0) ctx.moveTo(x(i), y(p.elo));
+        else ctx.lineTo(x(i), y(p.elo));
+      });
+      ctx.stroke();
+      ctx.fillStyle = "#38bdf8";
+      pts.forEach((p, i) => {
+        ctx.beginPath(); ctx.arc(x(i), y(p.elo), 3, 0, Math.PI * 2); ctx.fill();
+      });
+    })();
+  </script>
+</div>
+{% endif %}
+
+<div class="panel">
+  <h2>Confrontations</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Adversaire</th>
+          <th>Score</th>
+          <th>V / N / D</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in confrontations %}
+        <tr>
+          <td><a href="{{ u('/agents/' ~ c.opponent_id) }}">{{ c.opponent_name }}</a></td>
+          <td><strong>{{ '%.1f'|format(c.score) }} / {{ c.games }}</strong></td>
+          <td class="muted">{{ c.wins }} / {{ c.draws }} / {{ c.losses }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="3" class="muted">Aucune confrontation enregistrée.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="panel">
+  <h2>Parties récentes</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Adversaire</th>
+          <th>Côté</th>
+          <th>Résultat</th>
+          <th>Frames</th>
+          <th>CPU moy.</th>
+          <th>Replay</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in matches %}
+        <tr>
+          <td><a href="{{ u('/agents/' ~ m.opponent_id) }}">{{ m.opponent_name }}</a></td>
+          <td class="muted">{{ m.side }}</td>
+          <td>
+            {% if m.result_label == 'Victoire' %}<span class="badge badge-ok">Victoire</span>
+            {% elif m.result_label == 'Défaite' %}<span class="badge badge-err">Défaite</span>
+            {% else %}<span class="badge">Nul</span>{% endif %}
+            {% if m.failure_reason %}<span class="muted">({{ m.failure_reason }})</span>{% endif %}
+          </td>
+          <td class="muted">{{ m.end_frame }}</td>
+          <td class="muted">{{ '%.2f'|format(m.mean_ms) }} ms</td>
+          <td>
+            {% if m.has_replay %}
+              <a href="{{ m.replay_url }}">Regarder</a>
+            {% else %}
+              <span class="muted">—</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="muted">Aucune partie jouée.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

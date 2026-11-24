@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Règles — Arène Automathon{% endblock %}
+{% block content %}
+<h1>Règles de l'Arène Automathon ({{ settings.game_version }})</h1>
+
+<div class="grid-2">
+  <div class="panel">
+    <h2>Format de l'agent</h2>
+    <p>
+      Téléchargez le kit officiel sur
+      <a href="https://github.com/antorchn/automathon/releases/tag/v1.0.0" target="_blank" rel="noopener">antorchn/automathon (release v1.0.0)</a>.
+    </p>
+    <ul>
+      <li>Archive <code>.zip</code> d'au plus <strong>{{ settings.submission_max_mb }} Mo</strong>.</li>
+      <li>Un unique dossier racine <code>&lt;nom&gt;/</code> contenant <code>agent.py</code>.</li>
+      <li><code>agent.py</code> définit <code>ParticipantAgent</code> avec <code>get_action(state: GameState) -&gt; AIAction</code>.</li>
+      <li>Bibliothèques du kit 1.0.0 uniquement (numpy, numba, torch CPU, stable-baselines3, pydantic…).</li>
+      <li>Aucune connexion réseau, écriture autorisée uniquement dans <code>/tmp</code> (100 Mo).</li>
+    </ul>
+  </div>
+
+  <div class="panel">
+    <h2>Limites d'exécution</h2>
+    <ul>
+      <li>Chargement et préchauffage : <strong>{{ settings.agent_load_timeout_s }} s</strong> max.</li>
+      <li>Mémoire conteneur : <strong>{{ settings.agent_memory_mb }} Mo</strong> (sans swap), 1 vCPU.</li>
+      <li>Temps CPU moyen de décision : <strong>{{ settings.decision_mean_ms_limit }} ms</strong> par partie.</li>
+      <li>Délai de réponse par décision : <strong>{{ settings.decision_timeout_ms }} ms</strong> (sinon l'action précédente est gardée).</li>
+      <li>Exceptions tolérées : <strong>{{ settings.max_exceptions_per_game }}</strong> par partie (au-delà : forfait).</li>
+      <li>Durée maximale : <strong>{{ settings.max_frames }} frames</strong> (70 s de jeu).</li>
+    </ul>
+  </div>
+</div>
+
+<div class="grid-2">
+  <div class="panel">
+    <h2>Classement Elo et placement</h2>
+    <ul>
+      <li>Validation : {{ settings.validation_games }} parties contre <code>dummy_bot</code>.</li>
+      <li>Placement : {{ settings.placement_opponents }} adversaires (ou tous si moins de {{ settings.placement_opponents }} classés), {{ settings.placement_maps_per_opponent * 2 }} parties chacun.</li>
+      <li>Elo calculé globalement par maximum de vraisemblance (modèle de Bradley-Terry), avec <code>{{ settings.anchor_agent_name }}</code> fixé à {{ settings.anchor_elo|int }}.</li>
+      <li>Un agent dont la marge (±1,96σ) dépasse {{ settings.provisional_margin|int }} Elo est marqué <strong>provisoire</strong>.</li>
+      <li>Cooldown : {{ settings.cooldown_minutes }} minutes entre deux envois par compte.</li>
+    </ul>
+  </div>
+
+  <div class="panel">
+    <h2>Données personnelles</h2>
+    <ul>
+      <li>Connexion par OAuth GitHub sans permission supplémentaire (profil public uniquement).</li>
+      <li>Données conservées : identifiant numérique GitHub, login, URL d'avatar, date d'inscription, et adresse IP des envois pendant <strong>30 jours</strong> uniquement (garde-fou anti-abus). Aucun e-mail n'est lu ni stocké.</li>
+      <li>Vous pouvez à tout moment supprimer votre compte, vos agents et vos replays depuis <a href="{{ u('/account') }}">Mon compte</a>.</li>
+    </ul>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Replay {{ match.left_name }} vs {{ match.right_name }} — Arène Automathon{% endblock %}
+{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:14px">
+  <div>
+    <h1>
+      <a href="{{ u('/agents/' ~ match.left_id) }}">{{ match.left_name }}</a>
+      <span class="muted">vs</span>
+      <a href="{{ u('/agents/' ~ match.right_id) }}">{{ match.right_name }}</a>
+    </h1>
+    <p class="muted" style="margin:0">
+      Graine {{ match.seed }} · Version {{ match.game_version }} ·
+      {% if match.outcome == 'left' %}Victoire de {{ match.left_name }} (gauche)
+      {% elif match.outcome == 'right' %}Victoire de {{ match.right_name }} (droite)
+      {% else %}Match nul{% endif %}
+      à la frame {{ match.end_frame }} (PV {{ match.left_health|int }} / {{ match.right_health|int }})
+      {% if match.failure_reason %}· Forfait : {{ match.failure_reason }}{% endif %}
+    </p>
+  </div>
+  {% if match.has_replay %}
+    <a class="btn btn-secondary" href="{{ match.replay_json_url }}">Télécharger JSON</a>
+  {% endif %}
+</div>
+
+{% if not match.has_replay %}
+  <div class="alert alert-err">Le replay de cette partie n'est plus disponible.</div>
+{% elif not match.webgl_available %}
+  <div class="alert alert-err">
+    Build WebGL {{ match.game_version }} non monté sur le serveur.
+    <a href="{{ match.replay_json_url }}">Télécharger le replay JSON</a>.
+  </div>
+{% else %}
+  <iframe class="replay-frame" src="{{ match.webgl_url }}" allow="gamepad; fullscreen" allowfullscreen></iframe>
+{% endif %}
+{% endblock %}

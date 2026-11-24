@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}Admin — Arène Automathon{% endblock %}
+{% block content %}
+<h1>Administration de l'arène</h1>
+
+<div class="panel" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+  <form method="post" action="{{ u('/admin/toggle-background') }}">
+    <input type="hidden" name="csrf_token" value="{{ user.csrf }}" />
+    <button class="secondary" type="submit">
+      Affinage en tâche de fond : {{ 'ACTIF (couper)' if bg_enabled else 'COUPÉ (activer)' }}
+    </button>
+  </form>
+  <form method="post" action="{{ u('/admin/clear-queue') }}" onsubmit="return confirm('Vider toute la file d\'attente ?');">
+    <input type="hidden" name="csrf_token" value="{{ user.csrf }}" />
+    <button class="danger" type="submit">Vider la file d'attente</button>
+  </form>
+</div>
+
+<div class="panel">
+  <h2>Jobs en erreur ({{ error_jobs|length }})</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Type</th>
+          <th>Tentatives</th>
+          <th>Erreur</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for j in error_jobs %}
+        <tr>
+          <td><code>{{ j[0] }}</code></td>
+          <td>{{ j[1] }}</td>
+          <td>{{ j[2] }}</td>
+          <td class="muted"><code>{{ (j[3] or '')[:180] }}</code></td>
+          <td>
+            <form method="post" action="{{ u('/admin/retry-job') }}">
+              <input type="hidden" name="csrf_token" value="{{ user.csrf }}" />
+              <input type="hidden" name="job_id" value="{{ j[0] }}" />
+              <button class="secondary" type="submit">Relancer</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="muted">Aucun job en erreur.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="panel">
+  <h2>Agents actifs / en file</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Agent</th>
+          <th>Compte</th>
+          <th>Statut</th>
+          <th>Elo</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in active_agents %}
+        <tr>
+          <td><a href="{{ u('/agents/' ~ a[0]) }}">{{ a[1] }}</a></td>
+          <td>{{ a[6] }}</td>
+          <td>{{ a[2] }}</td>
+          <td>{{ '%.1f'|format(a[3]) }} ± {{ '%.1f'|format(a[4]) }}</td>
+          <td>
+            {% if not a[5] %}
+            <form method="post" action="{{ u('/admin/disable-agent') }}" onsubmit="return confirm('Désactiver cet agent ?');">
+              <input type="hidden" name="csrf_token" value="{{ user.csrf }}" />
+              <input type="hidden" name="agent_id" value="{{ a[0] }}" />
+              <button class="danger" type="submit">Désactiver</button>
+            </form>
+            {% else %}
+              <span class="muted">Référence</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="panel">
+  <h2>Derniers jobs</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Type</th>
+          <th>Statut</th>
+          <th>Worker</th>
+          <th>Durée</th>
+          <th>Créé</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for j in recent_jobs %}
+        <tr>
+          <td><code>{{ j[0] }}</code></td>
+          <td>{{ j[1] }}</td>
+          <td>{{ j[2] }}</td>
+          <td class="muted">{{ j[4] or '—' }}</td>
+          <td class="muted">{% if j[5] %}{{ '%.1f'|format(j[5]) }} s{% else %}—{% endif %}</td>
+          <td class="muted">{{ j[6][:19] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

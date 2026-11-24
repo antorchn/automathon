@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Classement Elo — Arène Automathon{% endblock %}
+{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;margin-bottom:16px">
+  <div>
+    <h1>Classement Elo</h1>
+    <p class="muted" style="margin:0">
+      Modèle Bradley-Terry ({{ settings.anchor_agent_name }} fixé à {{ settings.anchor_elo|int }}) ·
+      Dernière mise à jour : {{ updated_at }} ·
+      En attente : {{ queue_count }}
+    </p>
+  </div>
+  <a class="btn" href="{{ u('/submit') }}">Envoyer un agent</a>
+</div>
+
+<div class="panel">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Compte</th>
+          <th>Agent</th>
+          <th>Elo ± marge</th>
+          <th>Parties</th>
+          <th>V / N / D</th>
+          <th>Statut</th>
+          <th>Mise à jour</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in entries %}
+        <tr>
+          <td><strong>{{ e.rank }}</strong></td>
+          <td>
+            {% if e.avatar_url %}<img class="avatar" src="{{ e.avatar_url }}" alt="" /> {% endif %}
+            {{ e.github_login }}
+          </td>
+          <td><a href="{{ u('/agents/' ~ e.id) }}"><strong>{{ e.name }}</strong></a></td>
+          <td>
+            <strong>{{ '%.1f'|format(e.elo) }}</strong>
+            {% if e.is_anchor %}
+              <span class="muted">(ancre fixe)</span>
+            {% else %}
+              <span class="muted">± {{ '%.1f'|format(e.margin) }}</span>
+            {% endif %}
+          </td>
+          <td>{{ e.games_played }}</td>
+          <td class="muted">{{ e.wins }} / {{ e.draws }} / {{ e.losses }}</td>
+          <td>
+            {% if e.is_reference %}
+              <span class="badge badge-ref">Référence</span>
+            {% endif %}
+            {% if e.provisional %}
+              <span class="badge badge-prov">Provisoire</span>
+            {% else %}
+              <span class="badge badge-ok">Établi</span>
+            {% endif %}
+          </td>
+          <td class="muted">{{ e.updated_at }}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="8" class="muted">Aucun agent classé pour le moment.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

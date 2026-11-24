@@ -72,6 +72,8 @@ PARTICIPANT_EXCLUDED = (
     "CLAUDE.md", "ORGANISATION.md", "README.md", "kit/",
     "PythonAI/evaluation/run_tournament.py", "PythonAI/evaluation/record_tournament.py",
     "PythonAI/evaluation/record_highlights.py", "PythonAI/requirements_admin.txt", "PythonAI/webplay/",
+    # Outil local de mesure du classement, qui lit des agents d'organisateurs hors du dépôt
+    "scripts/run_local_leaderboard.py",
 )
 # kit/<fichier> va a la racine du kit des participants (zips et depot) ; README.md y remplace celui de ce depot
 KIT_ROOT_FILES = ("README.md", "DEMARRAGE.md")

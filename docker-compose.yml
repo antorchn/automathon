@@ -1,0 +1,64 @@
+services:
+  agent-image:
+    image: automathon-agent:1.0.0
+    build:
+      context: .
+      dockerfile: agent_host/Dockerfile
+    command: ["python", "-c", "print('automathon-agent:1.0.0 ready')"]
+    restart: "no"
+
+  arene-web:
+    build:
+      context: .
+      dockerfile: arene/Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "127.0.0.1:${ARENE_PORT:-8001}:8000"
+    volumes:
+      - ./data:/data
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import os, urllib.request; bp=os.environ.get('ARENE_BASE_PATH','/arene').strip('/'); p=('/'+bp if bp else '')+'/health'; urllib.request.urlopen('http://127.0.0.1:8000'+p, timeout=5)",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 10s
+
+  arene-worker:
+    build:
+      context: .
+      dockerfile: worker/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      arene-web:
+        condition: service_healthy
+      agent-image:
+        condition: service_completed_successfully
+    environment:
+      SITE_URL: ${SITE_URL:-http://arene-web:8000/arene}
+      WORKER_TOKEN: ${WORKER_TOKEN}
+      WORKER_PARALLEL_MATCHES: ${WORKER_PARALLEL_MATCHES:-2}
+      WORKER_NICE: ${WORKER_NICE:-10}
+      AGENT_IMAGE: automathon-agent:1.0.0
+      AGENT_WORK_VOLUME: arene_agent_work
+      AGENT_WORK_DIR: /agent_work
+      CGROUP_ROOT: /sys/fs/cgroup
+      CACHE_DIR: /var/cache/arene_worker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - arene_agent_work:/agent_work
+      - arene_worker_cache:/var/cache/arene_worker
+
+volumes:
+  arene_agent_work:
+    name: arene_agent_work
+  arene_worker_cache:
+    name: arene_worker_cache

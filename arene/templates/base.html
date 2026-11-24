@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}Arène Automathon{% endblock %}</title>
+  <link rel="stylesheet" href="{{ u('/static/style.css') }}" />
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="{{ u('/') }}">
+      <span class="brand-badge">ARÈNE {{ settings.game_version }}</span>
+      <span>Automathon</span>
+    </a>
+    <nav class="nav">
+      <a href="{{ u('/') }}">Classement</a>
+      <a href="{{ u('/submit') }}">Envoyer</a>
+      <a href="{{ u('/rules') }}">Règles</a>
+      {% if user %}
+        {% if user.is_admin %}
+          <a href="{{ u('/admin') }}">Admin</a>
+        {% endif %}
+        <a class="user-pill" href="{{ u('/account') }}">
+          {% if user.avatar_url %}<img src="{{ user.avatar_url }}" alt="" />{% endif %}
+          <span>{{ user.github_login }}</span>
+        </a>
+      {% else %}
+        {% if auth_dev_mode %}
+          <a class="btn btn-secondary" href="{{ u('/submit') }}">Connexion (dev)</a>
+        {% else %}
+          <a class="btn btn-secondary" href="{{ u('/auth/github/login') }}">Connexion GitHub</a>
+        {% endif %}
+      {% endif %}
+    </nav>
+  </div>
+</header>
+<main class="container">
+  {% block content %}{% endblock %}
+</main>
+</body>
+</html>

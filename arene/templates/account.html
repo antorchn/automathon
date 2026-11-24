@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Mon compte — Arène Automathon{% endblock %}
+{% block content %}
+<h1>Mon compte</h1>
+
+<div class="panel">
+  <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px">
+    {% if user.avatar_url %}
+      <img src="{{ user.avatar_url }}" alt="" style="width:52px;height:52px;border-radius:50%" />
+    {% endif %}
+    <div>
+      <div style="font-size:18px;font-weight:700">{{ user.github_login }}</div>
+      <div class="muted">ID GitHub : {{ user.github_id }} · Inscrit le {{ user.created_at[:10] }}</div>
+    </div>
+  </div>
+  <form method="post" action="{{ u('/auth/logout') }}">
+    <button class="secondary" type="submit">Se déconnecter</button>
+  </form>
+</div>
+
+<div class="panel" style="border-color:rgba(239,68,68,0.4)">
+  <h2>Supprimer mon compte</h2>
+  <p class="muted">
+    Cette action est définitive : elle efface votre compte, vos agents, leurs archives zip, leurs replays et retire leurs parties du classement, qui est immédiatement recalculé.
+  </p>
+  <form method="post" action="{{ u('/account/delete') }}" onsubmit="return confirm('Supprimer définitivement votre compte et toutes vos données ?');">
+    <input type="hidden" name="csrf_token" value="{{ user.csrf }}" />
+    <button class="danger" type="submit">Supprimer mon compte et mes données</button>
+  </form>
+</div>
+{% endblock %}

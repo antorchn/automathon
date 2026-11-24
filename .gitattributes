@@ -1,8 +1,9 @@
 # Fins de ligne normalisees (LF dans le depot)
 * text=auto
 
-# Scripts shell : LF obligatoire, meme extraits depuis un clone Windows
+# Scripts shell et Dockerfiles : LF obligatoire, meme extraits depuis un clone Windows
 *.sh text eol=lf
+Dockerfile* text eol=lf
 *.ps1 text eol=crlf
 
 # Fichiers binaires (jamais de conversion de fins de ligne ni de diff texte)
