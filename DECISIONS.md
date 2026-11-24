@@ -29,3 +29,10 @@ Ce document consigne les choix pris pour les points laissés ouverts par `Spec �
 
 ## 7. Dépôt de publication
 - **Code public, dans le dépôt des participants** : l'arène vit dans `antorchn/automathon-rl` et part avec l'export du kit (`python tools/build.py export`) vers `antorchn/automathon`, d'où la VM la clone et la déploie (`deploy.sh`, branche `main`). Aucune clé d'accès n'est donc nécessaire sur la VM. Seul `scripts/run_local_leaderboard.py`, qui lit des agents d'organisateurs hors du dépôt, reste exclu de l'export. Le code de l'arène ne contient aucun secret : ils vivent dans `.env`, ignoré par git.
+
+## 8. Agents invités (`arene/scheduler.py`, `arene/import_agents.py`, page Admin)
+- **Comptes invités** : un administrateur ajoute des agents sans compte GitHub (par exemple ceux du tournoi final). Chaque
+  invité a un compte `acc_guest_<nom-du-dossier>` marqué `is_system` (aucune session possible), avec un `github_id`
+  négatif et stable, et le nom de l'équipe comme nom affiché. Réimporter le même nom de dossier remplace son agent.
+- **Sans limites** : l'import ne passe ni par le cooldown ni par `QUEUE_MAX` (`submit_agent(enforce_limits=False)`),
+  mais par la même validation et le même placement que les autres ; l'événement est noté `admin_import`.

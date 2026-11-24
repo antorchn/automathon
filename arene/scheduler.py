@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import random
 import uuid
@@ -211,8 +212,13 @@ def submit_agent(
     account_id: str,
     zip_bytes: bytes,
     ip_address: str,
+    enforce_limits: bool = True,
+    event_type: str = "submit",
 ) -> str:
-    """Valide le zip, applique cooldown & taille de file, et place l'agent en file."""
+    """Valide le zip, applique cooldown & taille de file, et place l'agent en file.
+
+    enforce_limits=False (import par un administrateur) : ni cooldown ni limite de taille de file.
+    """
     agent_name, sha = validate_agent_zip(zip_bytes, max_mb=settings.submission_max_mb)
     now_dt = _utcnow()
     now = _iso(now_dt)
@@ -223,7 +229,7 @@ def submit_agent(
 
     with write_tx(session):
         # Cooldown (vérifié dans la transaction)
-        if settings.cooldown_minutes > 0:
+        if enforce_limits and settings.cooldown_minutes > 0:
             last = session.execute(
                 text(
                     """
@@ -267,7 +273,7 @@ def submit_agent(
         waiting_count = session.execute(
             text("SELECT COUNT(*) FROM agents WHERE status IN ('queued', 'validating', 'placing')")
         ).scalar_one()
-        if waiting_count >= settings.queue_max:
+        if enforce_limits and waiting_count >= settings.queue_max:
             raise SubmissionRejectedError("File pleine : réessayez plus tard.")
 
         # Empêcher un double placement du même compte si déjà en validation/placement :
@@ -307,15 +313,70 @@ def submit_agent(
             text(
                 """
                 INSERT INTO ip_events (ip_address, event_type, account_id, created_at)
-                VALUES (:ip, 'submit', :acc, :now)
+                VALUES (:ip, :event, :acc, :now)
                 """
             ),
-            {"ip": ip_address, "acc": account_id, "now": now},
+            {"ip": ip_address, "event": event_type, "acc": account_id, "now": now},
         )
 
         _promote_queued_agents_in_tx(session, settings, now)
 
     return agent_id
+
+
+GUEST_ACCOUNT_PREFIX = "acc_guest_"
+
+
+def _guest_github_id(slug: str) -> int:
+    """Identifiant GitHub fictif et stable d'un compte invité : négatif, donc jamais celui d'un vrai compte."""
+    return -(int(hashlib.sha256(slug.encode("utf-8")).hexdigest()[:12], 16) + 1)
+
+
+def get_or_create_guest_account(session: Session, slug: str, display_name: str) -> str:
+    """Compte invité (sans GitHub) identifié par le nom du dossier de l'agent ; met à jour le nom affiché.
+
+    Ces comptes sont marqués is_system : personne ne peut s'y connecter (auth.read_session les exclut).
+    """
+    acc_id = f"{GUEST_ACCOUNT_PREFIX}{slug}"
+    now = _iso(_utcnow())
+    with write_tx(session):
+        row = session.execute(text("SELECT id FROM accounts WHERE id = :id"), {"id": acc_id}).fetchone()
+        if row is None:
+            session.execute(
+                text(
+                    """
+                    INSERT INTO accounts (id, github_id, github_login, avatar_url, created_at, is_system)
+                    VALUES (:id, :gid, :name, '', :now, 1)
+                    """
+                ),
+                {"id": acc_id, "gid": _guest_github_id(slug), "name": display_name, "now": now},
+            )
+        else:
+            session.execute(
+                text("UPDATE accounts SET github_login = :name WHERE id = :id"),
+                {"name": display_name, "id": acc_id},
+            )
+    return acc_id
+
+
+def import_guest_agent(
+    session: Session,
+    store: FileStore,
+    settings: Settings,
+    zip_bytes: bytes,
+    display_name: str | None,
+    ip_address: str,
+) -> str:
+    """Ajoute ou remplace, pour un administrateur, l'agent d'un invité sans compte GitHub (par exemple une équipe
+    d'un tournoi). Le compte invité est celui du nom de dossier du zip ; le nom affiché vaut display_name, ou ce nom
+    de dossier. L'agent passe par la validation et le placement habituels, sans cooldown ni limite de file.
+    """
+    agent_name, _ = validate_agent_zip(zip_bytes, max_mb=settings.submission_max_mb)
+    name = (display_name or "").strip()[:80] or agent_name
+    acc_id = get_or_create_guest_account(session, agent_name, name)
+    return submit_agent(
+        session, store, settings, acc_id, zip_bytes, ip_address, enforce_limits=False, event_type="admin_import"
+    )
 
 
 def _build_pair_games(

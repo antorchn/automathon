@@ -17,6 +17,29 @@
 </div>
 
 <div class="panel">
+  <h2>Ajouter des agents invités</h2>
+  <p class="muted">
+    Pour des agents sans compte GitHub, par exemple ceux d'un tournoi. Chaque zip, au format de l'arène (un dossier
+    <code>&lt;nom&gt;/</code> avec <code>agent.py</code>), crée ou met à jour le compte invité de ce nom de dossier, sans
+    cooldown ni limite de file. Le nom affiché vaut le champ ci-dessous pour un seul zip, sinon le nom du dossier.
+    Pour beaucoup d'agents avec leurs noms d'équipe : <code>python -m arene.import_agents</code> (voir INSTALL.md).
+  </p>
+  <form method="post" action="{{ u('/admin/import-agents') }}" enctype="multipart/form-data" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+    <input type="hidden" name="csrf_token" value="{{ user.csrf }}" />
+    <input type="file" name="agent_zips" accept=".zip" multiple required />
+    <input type="text" name="display_name" placeholder="Nom affiché (un seul zip)" maxlength="80" />
+    <button type="submit">Importer</button>
+  </form>
+  {% if import_results %}
+  <ul>
+    {% for r in import_results %}
+    <li>{{ r.file }} : {% if r.ok %}importé (<code>{{ r.detail }}</code>), en file pour validation{% else %}<strong>refusé</strong> — {{ r.detail }}{% endif %}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</div>
+
+<div class="panel">
   <h2>Jobs en erreur ({{ error_jobs|length }})</h2>
   <div class="table-wrap">
     <table>

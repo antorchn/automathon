@@ -528,56 +528,85 @@ def create_web_router(settings: Settings) -> APIRouter:
             raise HTTPException(status_code=403, detail="Accès réservé aux administrateurs")
         return user
 
+    def _admin_context(db, s: Settings) -> dict:
+        bg_enabled = scheduler.is_background_enabled(db, s)
+        active_agents = db.execute(
+            text(
+                """
+                SELECT a.id, a.name, a.status, a.elo, a.margin, a.is_reference, acc.github_login
+                FROM agents a
+                JOIN accounts acc ON acc.id = a.account_id
+                WHERE a.is_active = 1 OR a.status IN ('queued', 'validating', 'placing')
+                ORDER BY a.status, a.elo DESC
+                """
+            )
+        ).fetchall()
+        error_jobs = db.execute(
+            text(
+                """
+                SELECT id, type, attempts, last_error, created_at, finished_at
+                FROM jobs
+                WHERE status = 'error'
+                ORDER BY created_at DESC
+                LIMIT 50
+                """
+            )
+        ).fetchall()
+        recent_jobs = db.execute(
+            text(
+                """
+                SELECT id, type, status, attempts, lease_worker, duration_s, created_at
+                FROM jobs
+                ORDER BY created_at DESC
+                LIMIT 30
+                """
+            )
+        ).fetchall()
+        return dict(bg_enabled=bg_enabled, active_agents=active_agents, error_jobs=error_jobs, recent_jobs=recent_jobs)
+
     @router.get("/admin", response_class=HTMLResponse)
     def page_admin(request: Request):
         s: Settings = request.app.state.settings
         with request.app.state.session_factory() as db:
             user = _require_admin(request, db, s)
-            bg_enabled = scheduler.is_background_enabled(db, s)
-            active_agents = db.execute(
-                text(
-                    """
-                    SELECT a.id, a.name, a.status, a.elo, a.margin, a.is_reference, acc.github_login
-                    FROM agents a
-                    JOIN accounts acc ON acc.id = a.account_id
-                    WHERE a.is_active = 1 OR a.status IN ('queued', 'validating', 'placing')
-                    ORDER BY a.status, a.elo DESC
-                    """
-                )
-            ).fetchall()
-            error_jobs = db.execute(
-                text(
-                    """
-                    SELECT id, type, attempts, last_error, created_at, finished_at
-                    FROM jobs
-                    WHERE status = 'error'
-                    ORDER BY created_at DESC
-                    LIMIT 50
-                    """
-                )
-            ).fetchall()
-            recent_jobs = db.execute(
-                text(
-                    """
-                    SELECT id, type, status, attempts, lease_worker, duration_s, created_at
-                    FROM jobs
-                    ORDER BY created_at DESC
-                    LIMIT 30
-                    """
-                )
-            ).fetchall()
+            extra = _admin_context(db, s)
+        return templates.TemplateResponse(request, "admin.html", _ctx(request, user, **extra))
 
+    @router.post("/admin/import-agents", response_class=HTMLResponse)
+    async def admin_import_agents(
+        request: Request,
+        csrf_token: str = Form(""),
+        display_name: str = Form(""),
+        agent_zips: list[UploadFile] = File(...),
+    ):
+        """Ajoute des agents invités (sans compte GitHub) : un compte invité par nom de dossier de zip."""
+        s: Settings = request.app.state.settings
+        import_results = []
+        with request.app.state.session_factory() as db:
+            user = _require_admin(request, db, s)
+            verify_csrf(user, csrf_token)
+            single = len(agent_zips) == 1
+            for upload in agent_zips:
+                raw = await upload.read()
+                try:
+                    agent_id = scheduler.import_guest_agent(
+                        db,
+                        request.app.state.store,
+                        s,
+                        raw,
+                        display_name if single else None,
+                        get_client_ip(request),
+                    )
+                    import_results.append({"file": upload.filename, "ok": True, "detail": agent_id})
+                except (ZipValidationError, scheduler.SubmissionRejectedError) as exc:
+                    import_results.append({"file": upload.filename, "ok": False, "detail": str(exc)})
+            extra = _admin_context(db, s)
+        status_code = 200 if all(r["ok"] for r in import_results) else 400
         return templates.TemplateResponse(
             request,
             "admin.html",
-            _ctx(
-                request,
-                user,
-                bg_enabled=bg_enabled,
-                active_agents=active_agents,
-                error_jobs=error_jobs,
-                recent_jobs=recent_jobs,
-            ),
+            _ctx(request, user, import_results=import_results, **extra),
+            status_code=status_code,
         )
 
     @router.post("/admin/disable-agent")

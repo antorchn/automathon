@@ -142,3 +142,25 @@ Sur une machine externe disposant de Docker :
    SITE_URL=https://exemple.fr/arene WORKER_TOKEN=... WORKER_PARALLEL_MATCHES=4 WORKER_NICE=10 docker compose up -d arene-worker
    ```
 4. Monter `MAX_PLACEMENTS_IN_PROGRESS`, `PLACEMENT_MAPS_PER_OPPONENT`, etc. dans le `.env` du site et redémarrer `arene-web`.
+
+## 10. Ajouter des agents invités (administrateur)
+
+Pour des agents sans compte GitHub, par exemple ceux du tournoi final. Chaque zip au format de l'arène (un dossier
+`<nom>/` avec `agent.py`) crée ou met à jour le compte invité de ce nom de dossier, affiché sous le nom de l'équipe.
+Les agents passent par la validation et le placement habituels, un à la fois, sans cooldown ni limite de file.
+Personne ne peut se connecter sur un compte invité.
+
+- **Un ou quelques zips** : page `/admin`, section « Ajouter des agents invités ». Pour un seul zip, le champ
+  « Nom affiché » donne le nom de l'équipe ; sinon, c'est le nom du dossier.
+- **Beaucoup d'agents, avec leurs noms d'équipe** : un dossier qui contient les zips et un `equipes.json`
+  (`[{"zip": "<nom>.zip", "team": "Nom de l'équipe"}, ...]`), copié dans `data/import/` sur la VM :
+
+```bash
+# Depuis votre poste
+scp -r <dossier-des-zips> <utilisateur>@<adresse-vm>:/opt/automathon-arene/data/import
+# Sur la VM, dans /opt/automathon-arene
+docker compose exec arene-web python -m arene.import_agents /data/import
+```
+
+Comptez de 2 à 11 minutes de calcul par agent importé : 21 agents occupent la VM une à quatre heures. La page `/admin`
+montre la file.
