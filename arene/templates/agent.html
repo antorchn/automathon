@@ -37,7 +37,7 @@
 {% if history %}
 <div class="panel">
   <h2>Évolution de l'Elo</h2>
-  <canvas id="eloChart" width="900" height="220" style="width:100%;height:220px;background:#0d111a;border:1px solid var(--border);border-radius:8px"></canvas>
+  <canvas id="eloChart" width="900" height="220" style="width:100%;height:220px;background:var(--paper);border:1.5px solid var(--line);border-radius:14px"></canvas>
   <script>
     (function() {
       const pts = {{ history | tojson }};
@@ -52,22 +52,22 @@
       if (maxE - minE < 40) { minE -= 20; maxE += 20; }
       const x = i => pad.l + (pts.length === 1 ? w / 2 : (i / (pts.length - 1)) * w);
       const y = v => pad.t + h - ((v - minE) / (maxE - minE)) * h;
-      ctx.strokeStyle = "#253147"; ctx.lineWidth = 1;
+      ctx.strokeStyle = "#ecd5b6"; ctx.lineWidth = 1;
       for (let k = 0; k <= 4; k++) {
         const val = minE + (k / 4) * (maxE - minE);
         const yy = y(val);
         ctx.beginPath(); ctx.moveTo(pad.l, yy); ctx.lineTo(pad.l + w, yy); ctx.stroke();
-        ctx.fillStyle = "#93a1b8"; ctx.font = "11px sans-serif";
+        ctx.fillStyle = "#6c5545"; ctx.font = "11px 'JetBrains Mono', monospace";
         ctx.fillText(Math.round(val), 8, yy + 4);
       }
-      ctx.strokeStyle = "#ff6b1a"; ctx.lineWidth = 2.5;
+      ctx.strokeStyle = "#ff6a1a"; ctx.lineWidth = 2.5;
       ctx.beginPath();
       pts.forEach((p, i) => {
         if (i === 0) ctx.moveTo(x(i), y(p.elo));
         else ctx.lineTo(x(i), y(p.elo));
       });
       ctx.stroke();
-      ctx.fillStyle = "#38bdf8";
+      ctx.fillStyle = "#2b1d14";
       pts.forEach((p, i) => {
         ctx.beginPath(); ctx.arc(x(i), y(p.elo), 3, 0, Math.PI * 2); ctx.fill();
       });

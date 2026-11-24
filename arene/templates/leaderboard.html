@@ -31,22 +31,22 @@
       <tbody>
         {% for e in entries %}
         <tr>
-          <td><strong>{{ e.rank }}</strong></td>
+          <td><span class="rank rank-{{ e.rank }}">{{ e.rank }}</span></td>
           <td>
             {% if e.avatar_url %}<img class="avatar" src="{{ e.avatar_url }}" alt="" /> {% endif %}
             {{ e.github_login }}
           </td>
           <td><a href="{{ u('/agents/' ~ e.id) }}"><strong>{{ e.name }}</strong></a></td>
-          <td>
-            <strong>{{ '%.1f'|format(e.elo) }}</strong>
+          <td class="nowrap">
+            <strong class="num">{{ '%.1f'|format(e.elo) }}</strong>
             {% if e.is_anchor %}
               <span class="muted">(ancre fixe)</span>
             {% else %}
               <span class="muted">± {{ '%.1f'|format(e.margin) }}</span>
             {% endif %}
           </td>
-          <td>{{ e.games_played }}</td>
-          <td class="muted">{{ e.wins }} / {{ e.draws }} / {{ e.losses }}</td>
+          <td class="num">{{ e.games_played }}</td>
+          <td class="muted num">{{ e.wins }} / {{ e.draws }} / {{ e.losses }}</td>
           <td>
             {% if e.is_reference %}
               <span class="badge badge-ref">Référence</span>
@@ -57,7 +57,7 @@
               <span class="badge badge-ok">Établi</span>
             {% endif %}
           </td>
-          <td class="muted">{{ e.updated_at }}</td>
+          <td class="muted nowrap">{{ e.updated_at }}</td>
         </tr>
         {% else %}
         <tr>

@@ -10,8 +10,9 @@
 <header class="topbar">
   <div class="topbar-inner">
     <a class="brand" href="{{ u('/') }}">
-      <span class="brand-badge">ARÈNE {{ settings.game_version }}</span>
-      <span>Automathon</span>
+      <span class="brand-rlcs">RLCS</span>
+      <span class="brand-word">AUTOMATHON</span>
+      <span class="brand-tag">Arène {{ settings.game_version }}</span>
     </a>
     <nav class="nav">
       <a href="{{ u('/') }}">Classement</a>
@@ -35,8 +36,15 @@
     </nav>
   </div>
 </header>
+<div class="band" aria-hidden="true"></div>
 <main class="container">
   {% block content %}{% endblock %}
 </main>
+<footer class="site-footer">
+  <div class="footer-inner">
+    <span><b>Automatants</b> · Association d'Intelligence Artificielle de CentraleSupélec</span>
+    <span>Arène Automathon {{ settings.game_version }} · <a href="{{ u('/rules') }}">Règles</a></span>
+  </div>
+</footer>
 </body>
 </html>
