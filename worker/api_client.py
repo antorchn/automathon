@@ -8,6 +8,7 @@ import tempfile
 import zipfile
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 
 import httpx
 
@@ -58,6 +59,19 @@ class WorkerAPIClient:
         )
         resp.raise_for_status()
 
+    def _relative_to_site(self, url: str) -> str:
+        """Chemin à demander au client HTTP, dont base_url contient déjà le sous-chemin du site.
+
+        Le site donne ses URL avec son sous-chemin (ARENE_BASE_PATH, ex. /automathon-rlcs/api/worker/...) : on le
+        retire pour ne pas le doubler. Une URL absolue (http://...) est gardée telle quelle.
+        """
+        if url.startswith(("http://", "https://")):
+            return url
+        base_path = urlsplit(self.site_url).path.rstrip("/")
+        if base_path and (url == base_path or url.startswith(base_path + "/")):
+            return url[len(base_path):] or "/"
+        return url
+
     def ensure_agent_zip(self, zip_url: str, expected_sha256: str) -> Path:
         cached = self.cache_dir / f"{expected_sha256}.zip"
         if cached.is_file():
@@ -65,11 +79,7 @@ class WorkerAPIClient:
                 return cached
             cached.unlink()
 
-        # zip_url peut contenir ARENE_BASE_PATH (ex: /arene/api/worker/...), alors que base_url contient déjà /arene
-        url = zip_url
-        if self.site_url.endswith("/arene") and url.startswith("/arene/"):
-            url = url[len("/arene"):]
-        resp = self._client.get(url)
+        resp = self._client.get(self._relative_to_site(zip_url))
         resp.raise_for_status()
         data = resp.content
         actual = hashlib.sha256(data).hexdigest()

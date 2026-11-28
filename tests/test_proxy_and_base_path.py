@@ -96,3 +96,34 @@ def test_worker_site_url_follows_the_base_path(monkeypatch):
     assert WorkerConfig.from_env().site_url == "http://arene-web:8000"
     monkeypatch.setenv("SITE_URL", "https://automatants.cs-campus.fr/automathon-rlcs/")
     assert WorkerConfig.from_env().site_url == "https://automatants.cs-campus.fr/automathon-rlcs"
+
+
+@pytest.mark.parametrize(
+    "site_url, zip_url, expected_path",
+    [
+        ("http://arene-web:8000/automathon-rlcs", "/automathon-rlcs/api/worker/agents/a1/zip", "/automathon-rlcs/api/worker/agents/a1/zip"),
+        ("http://arene-web:8000/arene", "/arene/api/worker/agents/a1/zip", "/arene/api/worker/agents/a1/zip"),
+        ("http://arene-web:8000", "/api/worker/agents/a1/zip", "/api/worker/agents/a1/zip"),
+        ("https://automatants.cs-campus.fr/automathon-rlcs/", "/automathon-rlcs/api/worker/agents/a1/zip", "/automathon-rlcs/api/worker/agents/a1/zip"),
+    ],
+)
+def test_worker_downloads_agent_zips_under_any_sub_path(tmp_path: Path, site_url: str, zip_url: str, expected_path: str):
+    """Le sous-chemin du site n'est jamais doublé dans l'adresse de téléchargement d'un agent."""
+    import hashlib
+
+    import httpx
+
+    from worker.api_client import WorkerAPIClient
+
+    data = _make_zip({"a1/agent.py": AGENT_PY})
+    sha = hashlib.sha256(data).hexdigest()
+    seen: list[str] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen.append(request.url.path)
+        return httpx.Response(200, content=data) if request.url.path == expected_path else httpx.Response(404)
+
+    client = WorkerAPIClient(site_url, "t", tmp_path / "cache", transport=httpx.MockTransport(handler))
+    assert client.ensure_agent_zip(zip_url, sha).read_bytes() == data
+    assert seen == [expected_path]
+    client.close()
