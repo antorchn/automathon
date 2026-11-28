@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
 # Prépare la VM Debian 13 (vr-4v-4g) selon la section « Préparer et exposer la VM » de la spec.
 # Usage (sur la VM avec sudo) :
-#   sudo ./scripts/setup_vm.sh [--ssh-port 22] [--mode dev|subdomain|proxy] [--domain arene.exemple.fr] [--proxy-ip 10.0.0.2]
+#   sudo ./scripts/setup_vm.sh [--ssh-port 22] [--mode dev|subdomain|proxy] [--domain arene.exemple.fr]
+#                              [--proxy-ip 10.0.0.2] [--proxy-port 80]
+# En mode proxy, Caddy écoute en HTTP sur --proxy-port (80 par défaut), ouvert à la seule adresse --proxy-ip.
 set -euo pipefail
 
 SSH_PORT=22
 MODE="dev"
 DOMAIN=""
 PROXY_IP=""
+PROXY_PORT=80
 ARENE_PORT="${ARENE_PORT:-8001}"
 
 while [[ $# -gt 0 ]]; do
@@ -16,9 +19,10 @@ while [[ $# -gt 0 ]]; do
     --mode) MODE="$2"; shift 2 ;;
     --domain) DOMAIN="$2"; shift 2 ;;
     --proxy-ip) PROXY_IP="$2"; shift 2 ;;
+    --proxy-port) PROXY_PORT="$2"; shift 2 ;;
     --arene-port) ARENE_PORT="$2"; shift 2 ;;
     -h|--help)
-      sed -n '2,5p' "$0"
+      sed -n '2,7p' "$0"
       exit 0
       ;;
     *) echo "Option inconnue : $1" >&2; exit 2 ;;
@@ -106,8 +110,10 @@ elif [[ "${MODE}" == "proxy" ]]; then
     exit 2
   fi
   apt-get install -y caddy
+  # trusted_proxies dans reverse_proxy : syntaxe de Caddy 2.6 (paquet Debian 13). Caddy garde alors le
+  # X-Forwarded-For du proxy du site et y ajoute son adresse ; venant de toute autre adresse, il le remplace.
   cat > /etc/caddy/Caddyfile <<EOF
-http://:8000 {
+http://:${PROXY_PORT} {
     request_body {
         max_size 60MB
     }
@@ -116,7 +122,12 @@ http://:8000 {
     }
 }
 EOF
-  ufw allow from "${PROXY_IP}" to any port 8000 proto tcp
+  caddy validate --adapter caddyfile --config /etc/caddy/Caddyfile
+  # Ancien port du relais (8000 jusqu'au 28 novembre 2026) : il est filtré en amont de la VM.
+  if [[ "${PROXY_PORT}" != "8000" ]]; then
+    ufw delete allow from "${PROXY_IP}" to any port 8000 proto tcp >/dev/null 2>&1 || true
+  fi
+  ufw allow from "${PROXY_IP}" to any port "${PROXY_PORT}" proto tcp
   systemctl enable --now caddy
   systemctl reload caddy
 fi

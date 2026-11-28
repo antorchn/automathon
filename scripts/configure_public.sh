@@ -4,6 +4,7 @@
 # Usage (sur la VM de l'arène, dans /opt/automathon-arene) :
 #   ./scripts/configure_public.sh --url https://automatants.cs-campus.fr/automathon-rlcs \
 #       --proxy-ip <IP du reverse proxy du site> --github-client-id <Client ID> --admins <login1[,login2]>
+# Le proxy du site joint la VM en HTTP sur le port 80 (--proxy-port pour un autre port), ouvert à sa seule adresse.
 # Variante sous-domaine, sans proxy du site (Caddy gère HTTPS sur la VM) :
 #   ./scripts/configure_public.sh --url https://arene.exemple.fr --subdomain --github-client-id <ID> --admins <login>
 #
@@ -14,6 +15,7 @@ set -euo pipefail
 
 URL=""
 PROXY_IP=""
+PROXY_PORT=80
 CLIENT_ID=""
 ADMINS=""
 SUBDOMAIN=0
@@ -22,10 +24,11 @@ while [[ $# -gt 0 ]]; do
   case "$1" in
     --url) URL="$2"; shift 2 ;;
     --proxy-ip) PROXY_IP="$2"; shift 2 ;;
+    --proxy-port) PROXY_PORT="$2"; shift 2 ;;
     --github-client-id) CLIENT_ID="$2"; shift 2 ;;
     --admins) ADMINS="$2"; shift 2 ;;
     --subdomain) SUBDOMAIN=1; shift ;;
-    -h|--help) sed -n '2,13p' "$0"; exit 0 ;;
+    -h|--help) sed -n '2,14p' "$0"; exit 0 ;;
     *) echo "Option inconnue : $1" >&2; exit 2 ;;
   esac
 done
@@ -111,7 +114,7 @@ echo "=== .env mis à jour : PUBLIC_URL=${URL%/}, ARENE_BASE_PATH=${BASE_PATH}, 
 
 echo "=== Caddy et pare-feu (sudo)"
 if [[ "${SUBDOMAIN}" -eq 0 ]]; then
-  sudo ./scripts/setup_vm.sh --mode proxy --proxy-ip "${PROXY_IP}"
+  sudo ./scripts/setup_vm.sh --mode proxy --proxy-ip "${PROXY_IP}" --proxy-port "${PROXY_PORT}"
 else
   sudo ./scripts/setup_vm.sh --mode subdomain --domain "${HOST}"
 fi
@@ -123,12 +126,14 @@ HEALTH_PATH="$([[ "${BASE_PATH}" == "/" ]] && echo "" || echo "${BASE_PATH}")/he
 echo "=== Vérifications"
 curl -fsS "http://127.0.0.1:${ARENE_PORT:-8001}${HEALTH_PATH}" && echo "  <- l'arène répond sur la VM"
 if [[ "${SUBDOMAIN}" -eq 0 ]]; then
-  curl -fsS "http://127.0.0.1:8000${HEALTH_PATH}" && echo "  <- Caddy la transmet sur le port 8000"
+  curl -fsS "http://127.0.0.1:${PROXY_PORT}${HEALTH_PATH}" && echo "  <- Caddy la transmet sur le port ${PROXY_PORT}"
   VM_IP="$(hostname -I | awk '{print $1}')"
+  PORT_SUFFIX="$([[ "${PROXY_PORT}" == "80" ]] && echo "" || echo ":${PROXY_PORT}")"
   cat <<MSG
 
 Prochaine étape, côté site de l'association (INTEGRATION_SITE.md) :
-  ${URL%/}/  ->  http://${VM_IP}:8000${BASE_PATH}/  (sans retirer le préfixe ${BASE_PATH})
+  ${URL%/}/  ->  http://${VM_IP}${PORT_SUFFIX}${BASE_PATH}/  (sans retirer le préfixe ${BASE_PATH})
+Test depuis le serveur du site : curl -sS http://${VM_IP}${PORT_SUFFIX}${HEALTH_PATH}
 Puis vérifier : curl -sS ${URL%/}/health
 MSG
 else

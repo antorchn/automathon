@@ -46,4 +46,11 @@ Ce document consigne les choix pris pour les points laissés ouverts par `Spec �
 - **Cohérence** : l'arène refuse de démarrer si le chemin de `PUBLIC_URL` n'est pas `ARENE_BASE_PATH`.
 - **SITE_URL déduit** : sur la VM de l'arène, le worker joint le site à `http://arene-web:8000<ARENE_BASE_PATH>` ;
   `SITE_URL` ne sert plus qu'à un worker sur une autre machine.
+- **Relais sur le port 80** : Caddy reçoit le proxy du site sur le port 80 de la VM, ouvert par `ufw` à sa seule
+  adresse. Le réseau de la VM filtre en amont tous les ports sauf 22, 80 et 443 (vérifié le 28 novembre 2026 : les
+  paquets vers 8000 n'atteignent pas la VM) ; le port 8000 prévu d'abord aurait demandé d'ouvrir le groupe de
+  sécurité de la VM. `--proxy-port` garde un autre port possible.
+- **Caddy 2.6 (Debian 13)** : `trusted_proxies` s'écrit dans le bloc `reverse_proxy` (l'option globale
+  `servers { trusted_proxies }` n'existe qu'à partir de 2.7). Vérifié sur la VM : depuis le proxy de confiance, Caddy
+  garde `X-Forwarded-For` et `X-Forwarded-Proto` et y ajoute son adresse ; depuis une autre adresse, il les remplace.
 

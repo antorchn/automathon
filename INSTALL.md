@@ -35,7 +35,7 @@ variante. À la main, les deux variantes sont :
 # Sous-domaine public (Caddy gère HTTPS avec Let's Encrypt)
 sudo ./scripts/setup_vm.sh --mode subdomain --domain arene.exemple.fr
 
-# Derrière le reverse proxy du site principal (port 8000 ouvert uniquement à son IP)
+# Derrière le reverse proxy du site principal (port 80 ouvert uniquement à son IP ; --proxy-port pour un autre port)
 sudo ./scripts/setup_vm.sh --mode proxy --proxy-ip 10.0.0.2
 ```
 
@@ -187,7 +187,7 @@ n'est jamais ouverte directement sur Internet. Ce que fait le site est décrit d
 ```
 
    Le script sauvegarde `.env`, y règle `PUBLIC_URL`, `ARENE_BASE_PATH`, la connexion GitHub, les administrateurs et
-   `TRUSTED_PROXY` (avec l'adresse du proxy du site), coupe `AUTH_DEV_MODE`, installe Caddy sur le port 8000 ouvert à
+   `TRUSTED_PROXY` (avec l'adresse du proxy du site), coupe `AUTH_DEV_MODE`, installe Caddy sur le port 80 ouvert à
    la seule adresse du proxy du site (`setup_vm.sh --mode proxy`), redéploie et vérifie que l'arène répond.
 4. **Sur le site** : la règle du reverse proxy (INTEGRATION_SITE.md), puis les vérifications de ce document.
 5. **Nettoyage** : sur `/admin`, désactiver les agents de test (`e2e_…`, comptes de développement) pour qu'ils
